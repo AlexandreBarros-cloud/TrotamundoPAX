@@ -1,11 +1,14 @@
 
 import React, { useState, useEffect } from 'react';
+import htm from 'htm';
 import Layout from './components/Layout.tsx';
 import LandingPage from './components/LandingPage.tsx';
 import PassengerDashboard from './components/PassengerDashboard.tsx';
 import AgencyDashboard from './components/AgencyDashboard.tsx';
 import ChatWindow from './components/ChatWindow.tsx';
 import NotificationToast from './components/NotificationToast.tsx';
+
+const html = htm.bind(React.createElement);
 
 const DEFAULT_LOGO = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MDAgMzUwIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImdyYWQxIiB4MT0iMCUiIHkxPSIwJSIgeDI9IjEwMCUiIHkyPSIxMDAlIj48c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojRUU4RjY2O3N0b3Atb3BhY2l0eToxIiAvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6I0EzOTE2MTtzdG9wLW9wYWNpdHk6MSIgLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48ZyBmaWxsPSJub25lIiBzdHJva2U9InVybCgjZ3JhZDEpIiBzdHJva2Utd3lkdGg9IjIuNSI+PGNpcmNsZSBjeD0iMjUwIiBjeT0iMTAwIiByPSI4MCIvPjwvZz48dGV4dCB4PSIyNTAiIHk9IjI3MCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFicmlsIEZhdGZhY2UiIGZvbnQtc2l6ZT0iNjAiIGZpbGw9IiNFRThGNjYiPlRST1RBAU1VTkRPPC90ZXh0Pjwvc3ZnPg==';
 
@@ -79,45 +82,48 @@ const App = () => {
   const renderView = () => {
     switch (state.currentView) {
       case 'landing':
-        return <LandingPage onLogin={handleLogin} logoUrl={state.logoUrl} />;
+        return html`<${LandingPage} onLogin=${handleLogin} logoUrl=${state.logoUrl} />`;
       case 'passenger-dashboard':
-        return <PassengerDashboard trips={trips.filter(t => t.id === state.loggedPassengerTripId)} onOpenChat={setActiveChatId} onLogout={() => setState(p => ({...p, currentView: 'landing'}))} />;
+        return html`<${PassengerDashboard} trips=${trips.filter(t => t.id === state.loggedPassengerTripId)} onOpenChat=${setActiveChatId} onLogout=${() => setState(p => ({...p, currentView: 'landing'}))} />`;
       case 'agency-dashboard':
-        return <AgencyDashboard trips={trips} onAddTrip={t => setTrips(prev => [...prev, t])} onUpdateTrip={t => setTrips(prev => prev.map(o => o.id === t.id ? t : o))} onOpenChat={setActiveChatId} onLogoUpload={url => setState(p => ({...p, logoUrl: url}))} />;
+        return html`<${AgencyDashboard} trips=${trips} onAddTrip=${t => setTrips(prev => [...prev, t])} onUpdateTrip=${t => setTrips(prev => prev.map(o => o.id === t.id ? t : o))} onOpenChat=${setActiveChatId} onLogoUpload=${url => setState(p => ({...p, logoUrl: url}))} />`;
       default:
-        return <LandingPage onLogin={handleLogin} logoUrl={state.logoUrl} />;
+        return html`<${LandingPage} onLogin=${handleLogin} logoUrl=${state.logoUrl} />`;
     }
   };
 
   const activeChatTrip = trips.find(t => t.id === activeChatId);
 
-  return (
+  return html`
     <div className="min-h-screen bg-[#FFFAF5]">
-      <NotificationToast {...notification} onClose={() => setNotification(p => ({...p, show: false}))} onClick={() => setActiveChatId(notification.tripId)} />
-      {state.currentView === 'landing' ? renderView() : (
-        <Layout 
-          logoUrl={state.logoUrl} 
-          userRole={state.userRole} 
-          onLogout={() => setState(p => ({...p, currentView: 'landing'}))} 
-          onViewChange={(v) => setState(p => ({...p, currentView: v}))}
-          isOnline={isOnline}
-        >
-          {renderView()}
-          {activeChatTrip && (
-            <ChatWindow 
-              trip={activeChatTrip} 
-              userRole={state.userRole} 
-              onClose={() => setActiveChatId(null)} 
-              onSendMessage={txt => {
-                const msg = { id: Math.random().toString(), sender: state.userRole, text: txt, timestamp: new Date().toISOString() };
-                setTrips(prev => prev.map(t => t.id === activeChatId ? {...t, messages: [...t.messages, msg]} : t));
-              }} 
-            />
-          )}
-        </Layout>
-      )}
+      <${NotificationToast} ...${notification} onClose=${() => setNotification(p => ({...p, show: false}))} onClick=${() => setActiveChatId(notification.tripId)} />
+      ${state.currentView === 'landing' 
+        ? renderView() 
+        : html`
+            <${Layout} 
+              logoUrl=${state.logoUrl} 
+              userRole=${state.userRole} 
+              onLogout=${() => setState(p => ({...p, currentView: 'landing'}))} 
+              onViewChange=${(v) => setState(p => ({...p, currentView: v}))}
+              isOnline=${isOnline}
+            >
+              ${renderView()}
+              ${activeChatTrip && html`
+                <${ChatWindow} 
+                  trip=${activeChatTrip} 
+                  userRole=${state.userRole} 
+                  onClose=${() => setActiveChatId(null)} 
+                  onSendMessage=${txt => {
+                    const msg = { id: Math.random().toString(), sender: state.userRole, text: txt, timestamp: new Date().toISOString() };
+                    setTrips(prev => prev.map(t => t.id === activeChatId ? {...t, messages: [...t.messages, msg]} : t));
+                  }} 
+                />
+              `}
+            <//>
+          `
+      }
     </div>
-  );
+  `;
 };
 
 export default App;

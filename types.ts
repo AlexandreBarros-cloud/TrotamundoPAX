@@ -1,4 +1,9 @@
 
+/**
+ * Trotamundo Viagens - Types Definitions
+ * Version: 1.0.2 - MIME Fix Deployment
+ */
+
 export type DocumentType = 'e-ticket' | 'voucher_hospedagem' | 'cartao_embarque' | 'voucher_servico' | 'outro';
 
 export interface ChatMessage {

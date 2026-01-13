@@ -1,4 +1,8 @@
 
+/**
+ * Trotamundo Viagens - App Component
+ * v1.0.4 - MIME Force Update
+ */
 import React, { useState, useEffect, useRef } from 'react';
 import Layout from './components/Layout.tsx';
 import LandingPage from './components/LandingPage.tsx';

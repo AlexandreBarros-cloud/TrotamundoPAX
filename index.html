@@ -61,11 +61,22 @@
 <body class="bg-[#FFFAF5] text-slate-900 font-roboto">
     <div id="root"></div>
     
-    <script 
-      type="text/babel" 
-      data-type="module"
-      data-presets="react,typescript" 
-      src="index.tsx"
-    ></script>
+    <!-- Código de inicialização Inline para contornar erro de MIME type no entry-point -->
+    <script type="text/babel" data-type="module" data-presets="react,typescript">
+      import React from 'react';
+      import ReactDOM from 'react-dom/client';
+      import App from './App.tsx';
+
+      const rootElement = document.getElementById('root');
+      if (rootElement) {
+        const root = ReactDOM.createRoot(rootElement);
+        root.render(
+          <React.StrictMode>
+            <App />
+          </React.StrictMode>
+        );
+        console.log("🌍 Trotamundo Viagens v1.0.4 Online");
+      }
+    </script>
 </body>
 </html>

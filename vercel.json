@@ -3,11 +3,15 @@
   "version": 2,
   "headers": [
     {
-      "source": "/(.*)\\.(tsx|ts|jsx)",
+      "source": "/:path*(.tsx|.ts|.jsx)",
       "headers": [
         {
           "key": "Content-Type",
           "value": "application/javascript; charset=utf-8"
+        },
+        {
+          "key": "Cache-Control",
+          "value": "no-cache, no-store, must-revalidate"
         },
         {
           "key": "X-Content-Type-Options",

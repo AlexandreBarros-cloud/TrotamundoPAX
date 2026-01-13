@@ -1,12 +1,8 @@
 
 import { GoogleGenAI, Type } from "@google/genai";
-import { Suggestion } from "../types.ts";
 
-// Global initialization helper removed to ensure compliance with "initialize right before call" rule
-
-export const getDestinationSuggestions = async (destination: string, documentNames: string[]): Promise<Suggestion[]> => {
+export const getDestinationSuggestions = async (destination, documentNames) => {
   try {
-    // Creating new instance directly before call with process.env.API_KEY as per guidelines
     const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
@@ -47,9 +43,8 @@ export const getDestinationSuggestions = async (destination: string, documentNam
   }
 };
 
-export const editTravelPhoto = async (base64Data: string, prompt: string): Promise<string | null> => {
+export const editTravelPhoto = async (base64Data, prompt) => {
   try {
-    // Creating new instance directly before call with process.env.API_KEY as per guidelines
     const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     const matches = base64Data.match(/^data:([^;]+);base64,(.+)$/);
     if (!matches) throw new Error("Invalid base64 data");
@@ -77,8 +72,8 @@ export const editTravelPhoto = async (base64Data: string, prompt: string): Promi
     if (response.candidates && response.candidates[0].content && response.candidates[0].content.parts) {
       for (const part of response.candidates[0].content.parts) {
         if (part.inlineData) {
-          const base64EncodeString: string = part.inlineData.data;
-          const returnedMimeType: string = part.inlineData.mimeType;
+          const base64EncodeString = part.inlineData.data;
+          const returnedMimeType = part.inlineData.mimeType;
           return `data:${returnedMimeType};base64,${base64EncodeString}`;
         }
       }

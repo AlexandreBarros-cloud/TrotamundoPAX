@@ -1,26 +1,15 @@
 
-/**
- * Security Service - Trotamundo Viagens
- * Implementation of client-side encryption for sensitive passenger data.
- */
-
 const ENCRYPTION_ALGORITHM = 'AES-GCM';
 
-// Helper to convert string to buffer
-const strToBuffer = (str: string) => new TextEncoder().encode(str);
+const strToBuffer = (str) => new TextEncoder().encode(str);
+const bufferToStr = (buf) => new TextDecoder().decode(buf);
 
-// Helper to convert buffer to string
-const bufferToStr = (buf: ArrayBuffer) => new TextDecoder().decode(buf);
-
-/**
- * Generates a memorable and secure access code based on destination
- */
-export function generateAccessCode(destination: string): string {
+export function generateAccessCode(destination) {
   const year = new Date().getFullYear().toString().slice(-2);
   const normalized = destination
     .normalize('NFD')
-    .replace(/[\u0300-\u036f]/g, '') // Remove accents
-    .replace(/[^a-zA-Z]/g, '') // Remove non-letters
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/[^a-zA-Z]/g, '')
     .toUpperCase()
     .slice(0, 6);
   
@@ -29,8 +18,7 @@ export function generateAccessCode(destination: string): string {
   return `${normalized}${year}${randomSuffix}`;
 }
 
-// Derives a cryptographic key from the passenger access code
-async function deriveKey(accessCode: string): Promise<CryptoKey> {
+async function deriveKey(accessCode) {
   const passwordBuffer = strToBuffer(accessCode);
   const baseKey = await crypto.subtle.importKey(
     'raw',
@@ -43,7 +31,7 @@ async function deriveKey(accessCode: string): Promise<CryptoKey> {
   return crypto.subtle.deriveKey(
     {
       name: 'PBKDF2',
-      salt: strToBuffer('trotamundo-salt-2024'), // Constant salt for this demo
+      salt: strToBuffer('trotamundo-salt-2024'),
       iterations: 100000,
       hash: 'SHA-256'
     },
@@ -54,10 +42,7 @@ async function deriveKey(accessCode: string): Promise<CryptoKey> {
   );
 }
 
-/**
- * Encrypts a JavaScript object using a key
- */
-export async function encryptData(data: any, key: string): Promise<string> {
+export async function encryptData(data, key) {
   try {
     const cryptoKey = await deriveKey(key);
     const iv = crypto.getRandomValues(new Uint8Array(12));
@@ -69,7 +54,6 @@ export async function encryptData(data: any, key: string): Promise<string> {
       encodedData
     );
 
-    // Combine IV and Encrypted content for storage
     const combined = new Uint8Array(iv.length + encryptedContent.byteLength);
     combined.set(iv);
     combined.set(new Uint8Array(encryptedContent), iv.length);
@@ -81,10 +65,7 @@ export async function encryptData(data: any, key: string): Promise<string> {
   }
 }
 
-/**
- * Decrypts a base64 string back to a JavaScript object
- */
-export async function decryptData(encryptedBase64: string, key: string): Promise<any> {
+export async function decryptData(encryptedBase64, key) {
   try {
     const cryptoKey = await deriveKey(key);
     const combined = new Uint8Array(
@@ -107,9 +88,6 @@ export async function decryptData(encryptedBase64: string, key: string): Promise
   }
 }
 
-/**
- * Simulates an "End-to-End Encryption" verification
- */
 export const isSecureConnection = () => {
   return window.isSecureContext && !!window.crypto.subtle;
 };

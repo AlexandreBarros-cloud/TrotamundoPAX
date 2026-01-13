@@ -1,23 +1,14 @@
 
 import React, { useState } from 'react';
 import { Plus, Search, FileText, Edit3, MessageCircle, Upload, Calendar, Key, Globe, Compass, X, Pencil, Sparkles, User, MapPin } from 'lucide-react';
-import { Trip, DocumentType, Suggestion } from '../types.ts';
 import { generateAccessCode } from '../services/securityService.ts';
 
-interface AgencyDashboardProps {
-  trips: Trip[];
-  onAddTrip: (trip: Trip) => void;
-  onUpdateTrip: (trip: Trip) => void;
-  onLogoUpload: (url: string) => void;
-  onOpenChat: (tripId: string) => void;
-}
-
-const AgencyDashboard: React.FC<AgencyDashboardProps> = ({ trips, onAddTrip, onUpdateTrip, onLogoUpload, onOpenChat }) => {
+const AgencyDashboard = ({ trips, onAddTrip, onUpdateTrip, onLogoUpload, onOpenChat }) => {
   const [searchTerm, setSearchTerm] = useState('');
-  const [activeTripId, setActiveTripId] = useState<string | null>(null);
+  const [activeTripId, setActiveTripId] = useState(null);
   const [isNewTripModalOpen, setIsNewTripModalOpen] = useState(false);
   
-  const [newTripForm, setNewTripForm] = useState<Partial<Trip>>({
+  const [newTripForm, setNewTripForm] = useState({
     passengerName: '',
     destination: '',
     accessCode: '',
@@ -25,7 +16,7 @@ const AgencyDashboard: React.FC<AgencyDashboardProps> = ({ trips, onAddTrip, onU
     endDate: '',
   });
 
-  const [recForm, setRecForm] = useState<Partial<Suggestion>>({
+  const [recForm, setRecForm] = useState({
     id: undefined,
     title: '',
     description: '',
@@ -44,9 +35,9 @@ const AgencyDashboard: React.FC<AgencyDashboardProps> = ({ trips, onAddTrip, onU
 
     onAddTrip({
       id: Math.random().toString(),
-      accessCode: newTripForm.accessCode!.toUpperCase(),
-      passengerName: newTripForm.passengerName!,
-      destination: newTripForm.destination!,
+      accessCode: newTripForm.accessCode.toUpperCase(),
+      passengerName: newTripForm.passengerName,
+      destination: newTripForm.destination,
       startDate: newTripForm.startDate || new Date().toISOString(),
       endDate: newTripForm.endDate || new Date().toISOString(),
       status: 'upcoming',
@@ -68,7 +59,7 @@ const AgencyDashboard: React.FC<AgencyDashboardProps> = ({ trips, onAddTrip, onU
     }
   };
 
-  const handleAddUpdate = (tripId: string) => {
+  const handleAddUpdate = (tripId) => {
     const desc = prompt("Descreva a mudança na viagem:");
     if (!desc) return;
     const trip = trips.find(t => t.id === tripId);
@@ -80,9 +71,9 @@ const AgencyDashboard: React.FC<AgencyDashboardProps> = ({ trips, onAddTrip, onU
     }
   };
 
-  const handleAddDocument = (tripId: string) => {
+  const handleAddDocument = (tripId) => {
     const docName = prompt("Nome do documento (ex: E-Ticket LATAM):");
-    const docType = prompt("Tipo (e-ticket, voucher_hospedagem, cartao_embarque, voucher_servico):") as DocumentType;
+    const docType = prompt("Tipo (e-ticket, voucher_hospedagem, cartao_embarque, voucher_servico):");
     if (!docName || !docType) return;
     const trip = trips.find(t => t.id === tripId);
     if (trip) {
@@ -93,12 +84,12 @@ const AgencyDashboard: React.FC<AgencyDashboardProps> = ({ trips, onAddTrip, onU
     }
   };
 
-  const openAddRecommendation = (tripId: string) => {
+  const openAddRecommendation = (tripId) => {
     setActiveTripId(tripId);
     setRecForm({ id: undefined, title: '', description: '', type: 'cultura', isPurchased: false });
   };
 
-  const openEditRecommendation = (tripId: string, rec: Suggestion) => {
+  const openEditRecommendation = (tripId, rec) => {
     setActiveTripId(tripId);
     setRecForm({ id: rec.id, title: rec.title, description: rec.description, type: rec.type, isPurchased: rec.isPurchased });
   };
@@ -108,11 +99,11 @@ const AgencyDashboard: React.FC<AgencyDashboardProps> = ({ trips, onAddTrip, onU
     const trip = trips.find(t => t.id === activeTripId);
     if (trip) {
       const isEditing = !!recForm.id;
-      let updatedRecommendations: Suggestion[];
+      let updatedRecommendations;
       if (isEditing) {
-        updatedRecommendations = (trip.recommendations || []).map(r => r.id === recForm.id ? { ...r, ...recForm as Suggestion, source: 'agency' } : r);
+        updatedRecommendations = (trip.recommendations || []).map(r => r.id === recForm.id ? { ...r, ...recForm, source: 'agency' } : r);
       } else {
-        updatedRecommendations = [...(trip.recommendations || []), { id: Math.random().toString(), title: recForm.title!, description: recForm.description!, type: recForm.type as any, isPurchased: recForm.isPurchased || false, source: 'agency', reason: 'Sugestão personalizada da sua agência' }];
+        updatedRecommendations = [...(trip.recommendations || []), { id: Math.random().toString(), title: recForm.title, description: recForm.description, type: recForm.type, isPurchased: recForm.isPurchased || false, source: 'agency', reason: 'Sugestão personalizada da sua agência' }];
       }
       onUpdateTrip({ ...trip, recommendations: updatedRecommendations });
       setActiveTripId(null);
@@ -134,7 +125,7 @@ const AgencyDashboard: React.FC<AgencyDashboardProps> = ({ trips, onAddTrip, onU
               const file = e.target.files?.[0];
               if (file) {
                 const reader = new FileReader();
-                reader.onload = (ev) => onLogoUpload(ev.target?.result as string);
+                reader.onload = (ev) => onLogoUpload(ev.target.result);
                 reader.readAsDataURL(file);
               }
             }} />

@@ -1,21 +1,12 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Send, X, Bot, Sparkles, Loader2, User, Headset } from 'lucide-react';
-import { ChatMessage, Trip } from '../types.ts';
+import { Send, X, User, Headset, Sparkles, Loader2 } from 'lucide-react';
 import { GoogleGenAI } from "@google/genai";
 
-interface ChatWindowProps {
-  trip: Trip;
-  userRole: 'passenger' | 'agency';
-  // Fix: changed from void to () => void to allow function passing and event handling
-  onClose: () => void;
-  onSendMessage: (text: string) => void;
-}
-
-const ChatWindow: React.FC<ChatWindowProps> = ({ trip, userRole, onClose, onSendMessage }) => {
+const ChatWindow = ({ trip, userRole, onClose, onSendMessage }) => {
   const [inputText, setInputText] = useState('');
   const [isSuggesting, setIsSuggesting] = useState(false);
-  const scrollRef = useRef<HTMLDivElement>(null);
+  const scrollRef = useRef(null);
 
   useEffect(() => {
     if (scrollRef.current) {

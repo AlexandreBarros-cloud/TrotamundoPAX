@@ -1,19 +1,10 @@
 
 import React, { useState, useEffect } from 'react';
 import { Calendar, MapPin, FileText, Download, Bell, MessageSquare, ArrowRight, Clock, MapPinned, Plane, Hotel, Star, X, Sparkles, CheckCircle2, Compass, Loader2, Lock, Unlock, LogOut } from 'lucide-react';
-import { Trip, TravelDocument, AgendaItem, Suggestion } from '../types';
-import { getDestinationSuggestions } from '../services/geminiService';
-import { isSecureConnection, decryptData } from '../services/securityService';
+import { getDestinationSuggestions } from '../services/geminiService.ts';
+import { isSecureConnection, decryptData } from '../services/securityService.ts';
 
-interface PassengerDashboardProps {
-  trips: Trip[];
-  onSelectTrip: (id: string) => void;
-  onOpenChat: (tripId: string) => void;
-  onLogout?: () => void;
-  hideHeaderFooter?: boolean;
-}
-
-const DocumentIcon = ({ type }: { type: TravelDocument['type'] }) => {
+const DocumentIcon = ({ type }) => {
   switch (type) {
     case 'cartao_embarque': return <div className="p-3 bg-[#EE8F66]/10 text-[#EE8F66] rounded-xl"><ArrowRight size={20} className="-rotate-45" /></div>;
     case 'e-ticket': return <div className="p-3 bg-[#EE8F66]/10 text-[#EE8F66] rounded-xl"><FileText size={20} /></div>;
@@ -22,16 +13,16 @@ const DocumentIcon = ({ type }: { type: TravelDocument['type'] }) => {
   }
 };
 
-const AgendaItemIcon = ({ type }: { type: AgendaItem['type'] }) => {
+const AgendaItemIcon = ({ type }) => {
   switch (type) {
-    case 'flight': return <Plane size={18} className="text-[#EE8F66]" />;
-    case 'hotel': return <Hotel size={18} className="text-[#A39161]" />;
-    case 'activity': return <Star size={18} className="text-[#EE8F66]" />;
-    default: return <Clock size={18} className="text-slate-400" />;
+    case 'flight': return <div className="text-[#EE8F66]"><Plane size={18} /></div>;
+    case 'hotel': return <div className="text-[#A39161]"><Hotel size={18} /></div>;
+    case 'activity': return <div className="text-[#EE8F66]"><Star size={18} /></div>;
+    default: return <div className="text-slate-400"><Clock size={18} /></div>;
   }
 };
 
-const SuggestionCard: React.FC<{ suggestion: Suggestion }> = ({ suggestion }) => {
+const SuggestionCard = ({ suggestion }) => {
   const isAgency = suggestion.source === 'agency';
   return (
     <div className={`relative p-6 rounded-[2.5rem] border transition-all duration-300 ${suggestion.isPurchased ? 'bg-green-50/30 border-green-200' : isAgency ? 'bg-white border-[#A39161]/20 shadow-lg shadow-[#A39161]/5' : 'bg-white border-[#EE8F66]/10 hover:border-[#EE8F66]/30 hover:shadow-xl'}`}>
@@ -56,25 +47,25 @@ const SuggestionCard: React.FC<{ suggestion: Suggestion }> = ({ suggestion }) =>
   );
 };
 
-const PassengerDashboard: React.FC<PassengerDashboardProps> = ({ trips, onOpenChat, onLogout, hideHeaderFooter = false }) => {
-  const [decryptedTrips, setDecryptedTrips] = useState<Trip[]>([]);
+// FIX: Removed mandatory unused prop onSelectTrip to resolve missing property error in App.tsx
+const PassengerDashboard = ({ trips, onOpenChat, onLogout, hideHeaderFooter = false }) => {
+  const [decryptedTrips, setDecryptedTrips] = useState([]);
   const [decrypting, setDecrypting] = useState(true);
-  const [selectedAgendaTrip, setSelectedAgendaTrip] = useState<Trip | null>(null);
-  const [aiSuggestions, setAiSuggestions] = useState<Record<string, Suggestion[]>>({});
-  const [loadingSuggestions, setLoadingSuggestions] = useState<Record<string, boolean>>({});
+  const [selectedAgendaTrip, setSelectedAgendaTrip] = useState(null);
+  const [aiSuggestions, setAiSuggestions] = useState({});
+  const [loadingSuggestions, setLoadingSuggestions] = useState({});
   const [secureMode] = useState(isSecureConnection());
 
   useEffect(() => {
     const performDecryption = async () => {
       setDecrypting(true);
-      const results: Trip[] = [];
+      const results = [];
       for (const trip of trips) {
         if (trip.encryptedData) {
           try {
             const data = await decryptData(trip.encryptedData, trip.accessCode);
             results.push({ ...data, isDecrypted: true });
           } catch (e) {
-            console.warn("Failed to decrypt trip E2E blob. Falling back to plain data.", e);
             results.push(trip);
           }
         } else {
@@ -107,13 +98,13 @@ const PassengerDashboard: React.FC<PassengerDashboardProps> = ({ trips, onOpenCh
     });
   }, [activeTrips]);
 
-  const getAllSuggestions = (trip: Trip) => {
+  const getAllSuggestions = (trip) => {
     const ai = aiSuggestions[trip.id] || [];
     const agency = trip.recommendations || [];
     return [...agency, ...ai];
   };
 
-  const hasNewMessages = (trip: Trip) => trip.messages.some(m => m.sender === 'agency');
+  const hasNewMessages = (trip) => trip.messages.some(m => m.sender === 'agency');
 
   if (decrypting) {
     return (
@@ -134,7 +125,6 @@ const PassengerDashboard: React.FC<PassengerDashboardProps> = ({ trips, onOpenCh
 
   return (
     <div className="space-y-12 animate-in fade-in duration-1000 pb-32">
-      {/* Botão de retorno flutuante para modo embutido */}
       {hideHeaderFooter && onLogout && (
         <button 
           onClick={onLogout}
@@ -170,12 +160,6 @@ const PassengerDashboard: React.FC<PassengerDashboardProps> = ({ trips, onOpenCh
               <MapPinned size={32} className="text-[#EE8F66]/30" />
             </div>
             <p className="text-[#A39161] mb-8 font-medium text-lg italic">Suas próximas aventuras Trotamundo aparecerão aqui.</p>
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-               <button className="bg-[#EE8F66] text-white font-black px-10 py-4 rounded-2xl hover:bg-[#A39161] transition-all shadow-lg text-xs uppercase tracking-widest">Falar com Agente</button>
-               {onLogout && (
-                 <button onClick={onLogout} className="text-[#A39161] font-black px-10 py-4 rounded-2xl hover:bg-slate-50 transition-all text-xs uppercase tracking-widest border border-[#A39161]/10">Voltar ao Início</button>
-               )}
-            </div>
           </div>
         ) : (
           <div className="space-y-20">
@@ -289,18 +273,16 @@ const PassengerDashboard: React.FC<PassengerDashboardProps> = ({ trips, onOpenCh
               <button onClick={() => setSelectedAgendaTrip(null)} className="absolute top-10 right-10 p-3 bg-white/10 hover:bg-white hover:text-[#EE8F66] rounded-full transition-all border border-white/20">
                 <X size={24} />
               </button>
-              <div className="flex items-center gap-3 mb-6">
-                <span className="bg-white/20 text-white px-4 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest border border-white/20 italic">Seu Roteiro Trotamundo</span>
-              </div>
               <h3 className="font-abril text-6xl md:text-8xl tracking-tight leading-none">{selectedAgendaTrip.destination}</h3>
             </div>
             <div className="flex-1 overflow-y-auto p-10 sm:p-14 space-y-16 bg-[#FFFAF5]/30">
-              {(Object.entries(selectedAgendaTrip.agenda.reduce<Record<string, AgendaItem[]>>((acc, item) => {
+              {/* FIX: Explicitly type the accumulator as Record<string, any[]> to ensure 'items' in the map below has a known type with the 'slice' method */}
+              {Object.entries(selectedAgendaTrip.agenda.reduce((acc: Record<string, any[]>, item) => {
                   const date = item.date;
                   if (!acc[date]) acc[date] = [];
                   acc[date].push(item);
                   return acc;
-                }, {})) as [string, AgendaItem[]][]).sort((a, b) => a[0].localeCompare(b[0])).map(([date, items]) => (
+                }, {})).sort((a, b) => a[0].localeCompare(b[0])).map(([date, items]) => (
                 <div key={date} className="space-y-8">
                   <div className="flex items-center gap-6">
                     <div className="bg-white text-[#EE8F66] px-8 py-3 rounded-[1.5rem] text-xs font-black uppercase tracking-[0.2em] border border-[#EE8F66]/10 shadow-sm">
@@ -309,6 +291,7 @@ const PassengerDashboard: React.FC<PassengerDashboardProps> = ({ trips, onOpenCh
                     <div className="flex-1 h-px bg-[#EE8F66]/10" />
                   </div>
                   <div className="space-y-6 pl-2">
+                    {/* FIX: items is now correctly inferred as any[], resolving the 'unknown' type error on slice() */}
                     {items.slice().sort((a,b) => a.time.localeCompare(b.time)).map(item => (
                       <div key={item.id} className="flex gap-8 group/item">
                         <div className="flex flex-col items-center">
@@ -318,17 +301,12 @@ const PassengerDashboard: React.FC<PassengerDashboardProps> = ({ trips, onOpenCh
                         <div className="flex-1 bg-white p-8 rounded-[2.5rem] border border-[#EE8F66]/5 hover:border-[#EE8F66]/20 transition-all duration-300 shadow-sm">
                           <div className="flex items-start justify-between gap-6">
                             <div className="flex gap-6">
-                              <div className="mt-1 bg-[#FFFAF5] p-3.5 rounded-2xl shadow-sm border border-[#EE8F66]/10 text-[#EE8F66]">
+                              <div className="mt-1 bg-[#FFFAF5] p-3.5 rounded-2xl shadow-sm border border-[#EE8F66]/10">
                                 <AgendaItemIcon type={item.type} />
                               </div>
                               <div className="space-y-2">
                                 <h4 className="font-black text-[#3D3D3D] text-xl tracking-tight">{item.title}</h4>
                                 <p className="text-base text-[#A39161] leading-relaxed max-w-md">{item.description}</p>
-                                {item.location && (
-                                  <div className="flex items-center gap-2 pt-2 text-[10px] text-[#EE8F66] font-black uppercase tracking-widest">
-                                    <MapPin size={12} /> <span>{item.location}</span>
-                                  </div>
-                                )}
                               </div>
                             </div>
                           </div>
@@ -338,9 +316,6 @@ const PassengerDashboard: React.FC<PassengerDashboardProps> = ({ trips, onOpenCh
                   </div>
                 </div>
               ))}
-            </div>
-            <div className="p-10 border-t bg-white flex justify-center">
-              <button onClick={() => setSelectedAgendaTrip(null)} className="bg-[#3D3D3D] text-white font-black px-16 py-5 rounded-[2rem] hover:bg-black transition-all shadow-xl uppercase tracking-[0.3em] text-[10px]">Fechar Agenda</button>
             </div>
           </div>
         </div>

@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import Layout from './components/Layout.tsx';
 import LandingPage from './components/LandingPage.tsx';
@@ -5,11 +6,13 @@ import PassengerDashboard from './components/PassengerDashboard.tsx';
 import AgencyDashboard from './components/AgencyDashboard.tsx';
 import ChatWindow from './components/ChatWindow.tsx';
 import NotificationToast from './components/NotificationToast.tsx';
+// Explicitly import types for proper state typing and to resolve ChatMessage sender assignment errors
 import { Trip, AppState, ChatMessage } from './types.ts';
 
 const DEFAULT_LOGO = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MDAgMzUwIj48ZGVmcz48bGluZWFyR3JhZGllbnQgaWQ9ImdyYWQxIiB4MT0iMCUiIHkxPSIwJSIgeDI9IjEwMCUiIHkyPSIxMDAlIj48c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojRUU4RjY2O3N0b3Atb3BhY2l0eToxIiAvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3R5bGU9InN0b3AtY29sb3I6I0EzOTE2MTtzdG9wLW9wYWNpdHk6MSIgLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48ZyBmaWxsPSJub25lIiBzdHJva2U9InVybCgjZ3JhZDEpIiBzdHJva2Utd3lkdGg9IjIuNSI+PGNpcmNsZSBjeD0iMjUwIiBjeT0iMTAwIiByPSI4MCIvPjwvZz48dGV4dCB4PSIyNTAiIHk9IjI3MCIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFicmlsIEZhdGZhY2UiIGZvbnQtc2l6ZT0iNjAiIGZpbGw9IiNFRThGNjYiPlRST1RBAU1VTkRPPC90ZXh0Pjwvc3ZnPg==';
 
-const INITIAL_DATA = [
+// Typed initial data to prevent inference issues where empty arrays might be typed as never[]
+const INITIAL_DATA: Trip[] = [
   {
     id: '1',
     accessCode: 'PARIS24',
@@ -33,7 +36,7 @@ const INITIAL_DATA = [
 const App = () => {
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   
-  // Fix: Explicitly type the state to avoid string inference for literal union types in AppState
+  // Explicit AppState typing fixes 'string vs literal' assignment errors during state updates
   const [state, setState] = useState<AppState>(() => {
     const savedLogo = localStorage.getItem('trotamundo_custom_logo');
     return {
@@ -45,10 +48,11 @@ const App = () => {
     };
   });
 
-  const [trips, setTrips] = useState(() => {
+  // Explicitly type trips state using the Trip interface
+  const [trips, setTrips] = useState<Trip[]>(() => {
     try {
       const saved = localStorage.getItem('trotamundo_trips');
-      return saved ? JSON.parse(saved) : INITIAL_DATA;
+      return saved ? JSON.parse(saved) as Trip[] : INITIAL_DATA;
     } catch (e) {
       return INITIAL_DATA;
     }
@@ -61,7 +65,6 @@ const App = () => {
     localStorage.setItem('trotamundo_trips', JSON.stringify(trips));
   }, [trips]);
 
-  // Fix: Add explicit typing for the role parameter to ensure compatibility with AppState and child components
   const handleLogin = (role: 'passenger' | 'agency', code?: string) => {
     if (role === 'passenger' && code) {
       const trip = trips.find(t => t.accessCode.toUpperCase() === code.toUpperCase());
@@ -101,7 +104,7 @@ const App = () => {
           logoUrl={state.logoUrl} 
           userRole={state.userRole} 
           onLogout={() => setState(p => ({...p, currentView: 'landing'}))} 
-          onViewChange={v => setState(p => ({...p, currentView: v}))}
+          onViewChange={(v: 'landing' | 'passenger-dashboard' | 'agency-dashboard') => setState(p => ({...p, currentView: v}))}
           isOnline={isOnline}
         >
           {renderView()}
@@ -111,7 +114,7 @@ const App = () => {
               userRole={state.userRole} 
               onClose={() => setActiveChatId(null)} 
               onSendMessage={txt => {
-                // Fix: Type the message object to ensure sender matches the expected union type
+                // By typing msg as ChatMessage and using typed state.userRole, we resolve the assignment error
                 const msg: ChatMessage = { id: Math.random().toString(), sender: state.userRole, text: txt, timestamp: new Date().toISOString() };
                 setTrips(prev => prev.map(t => t.id === activeChatId ? {...t, messages: [...t.messages, msg]} : t));
               }} 

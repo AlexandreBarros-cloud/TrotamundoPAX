@@ -7,7 +7,7 @@ import { Suggestion } from "../types.ts";
 export const getDestinationSuggestions = async (destination: string, documentNames: string[]): Promise<Suggestion[]> => {
   try {
     // Creating new instance directly before call with process.env.API_KEY as per guidelines
-    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY as string });
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
       contents: `Você é um guia especializado da Trotamundo Viagens. 
@@ -50,7 +50,7 @@ export const getDestinationSuggestions = async (destination: string, documentNam
 export const editTravelPhoto = async (base64Data: string, prompt: string): Promise<string | null> => {
   try {
     // Creating new instance directly before call with process.env.API_KEY as per guidelines
-    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY as string });
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     const matches = base64Data.match(/^data:([^;]+);base64,(.+)$/);
     if (!matches) throw new Error("Invalid base64 data");
     

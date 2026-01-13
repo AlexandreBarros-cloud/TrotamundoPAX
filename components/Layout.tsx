@@ -2,17 +2,7 @@
 import React from 'react';
 import { Globe, LogOut, Home, WifiOff } from 'lucide-react';
 
-interface LayoutProps {
-  children: React.ReactNode;
-  logoUrl: string | null;
-  userRole: 'passenger' | 'agency';
-  onLogout: () => void;
-  onViewChange: (view: 'landing' | 'passenger-dashboard' | 'agency-dashboard') => void;
-  hideHeaderFooter?: boolean;
-  isOnline?: boolean;
-}
-
-const Layout: React.FC<LayoutProps> = ({ children, logoUrl, userRole, onLogout, onViewChange, hideHeaderFooter = false, isOnline = true }) => {
+const Layout = ({ children, logoUrl, userRole, onLogout, onViewChange, hideHeaderFooter = false, isOnline = true }) => {
   if (hideHeaderFooter) {
     return (
       <div className="flex flex-col min-h-screen">
@@ -65,7 +55,7 @@ const Layout: React.FC<LayoutProps> = ({ children, logoUrl, userRole, onLogout, 
             className="hidden md:flex items-center gap-2 text-[#A39161] hover:text-[#EE8F66] transition-colors font-bold text-[10px] uppercase tracking-widest bg-[#FFFAF5] px-4 py-2 rounded-full border border-[#EE8F66]/10"
           >
             <Home size={14} />
-            Início / Menu
+            Início
           </button>
         </div>
 
@@ -74,7 +64,7 @@ const Layout: React.FC<LayoutProps> = ({ children, logoUrl, userRole, onLogout, 
             onClick={onLogout}
             className="p-2.5 text-[#A39161] hover:text-red-500 hover:bg-red-50 rounded-xl transition-all flex items-center gap-2 group"
           >
-            <span className="hidden sm:inline text-[10px] font-black uppercase tracking-[0.2em] group-hover:tracking-[0.3em] transition-all">Sair / Voltar</span>
+            <span className="hidden sm:inline text-[10px] font-black uppercase tracking-[0.2em] group-hover:tracking-[0.3em] transition-all">Sair</span>
             <LogOut size={18} />
           </button>
         </nav>
@@ -88,14 +78,12 @@ const Layout: React.FC<LayoutProps> = ({ children, logoUrl, userRole, onLogout, 
         <div className="max-w-4xl mx-auto px-6">
           <div className="mb-6 opacity-80 flex justify-center transition-all duration-500 cursor-default">
              {logoUrl && (
-               <img src={logoUrl} alt="Footer Logo" className="h-32 w-auto" />
+               <img src={logoUrl} alt="Footer Logo" className="h-24 w-auto" />
              )}
           </div>
-          <p className="font-abril text-3xl mb-2 text-[#3D3D3D] tracking-tight">Trotamundo Viagens</p>
+          <p className="font-abril text-2xl mb-2 text-[#3D3D3D] tracking-tight">Trotamundo Viagens</p>
           <div className="flex flex-col items-center gap-4">
-            <p className="text-[#A39161] text-sm font-bold uppercase tracking-[0.2em]">Soluções em viagens</p>
-            <div className="h-px w-20 bg-gradient-to-r from-transparent via-[#EE8F66]/30 to-transparent my-4" />
-            <p className="text-[#A39161]/40 text-[10px] font-black uppercase tracking-widest mt-4">VIAGENS PERSONALIZADAS PARA VOCÊ</p>
+            <p className="text-[#A39161] text-xs font-bold uppercase tracking-[0.2em]">Sua viagem na palma da mão</p>
             <p className="text-[#A39161]/20 text-[9px] font-black uppercase tracking-[0.4em] mt-2">© {new Date().getFullYear()} — Portal Exclusivo</p>
           </div>
         </div>

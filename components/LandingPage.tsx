@@ -1,15 +1,9 @@
 
 import React, { useState } from 'react';
-import { Globe, User, ShieldCheck, ArrowLeft, Loader2, Eye, EyeOff } from 'lucide-react';
+import { Globe, User, ShieldCheck, ArrowLeft, Loader2, Eye, EyeOff, Info } from 'lucide-react';
 
-interface LandingPageProps {
-  onLogin: (role: 'passenger' | 'agency', code?: string) => boolean;
-  logoUrl: string | null;
-  isEmbedded?: boolean;
-}
-
-const LandingPage: React.FC<LandingPageProps> = ({ onLogin, logoUrl, isEmbedded = false }) => {
-  const [view, setView] = useState<'selection' | 'passenger-login' | 'agency-login'>('selection');
+const LandingPage = ({ onLogin, logoUrl, isEmbedded = false }) => {
+  const [view, setView] = useState('selection');
   const [code, setCode] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
@@ -17,7 +11,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin, logoUrl, isEmbedded 
   const [showPassengerCode, setShowPassengerCode] = useState(false);
   const [showAgencyPassword, setShowAgencyPassword] = useState(false);
 
-  const handlePassengerSubmit = (e: React.FormEvent) => {
+  const handlePassengerSubmit = (e) => {
     e.preventDefault();
     if (!code.trim()) return;
     
@@ -27,18 +21,18 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin, logoUrl, isEmbedded 
     setTimeout(() => {
       const success = onLogin('passenger', code);
       if (!success) {
-        setError('Código inválido. Verifique seus documentos.');
+        setError('Código inválido. Tente PARIS24 para testar.');
         setLoading(false);
       }
     }, 800);
   };
 
-  const handleAgencySubmit = (e: React.FormEvent) => {
+  const handleAgencySubmit = (e) => {
     e.preventDefault();
     if (code === 'ADMIN123') {
       onLogin('agency');
     } else {
-      setError('Acesso negado.');
+      setError('Acesso negado. Use ADMIN123.');
     }
   };
 
@@ -51,7 +45,6 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin, logoUrl, isEmbedded 
 
   return (
     <div className={`min-h-screen relative flex flex-col items-center justify-center p-6 bg-[#FFFAF5] overflow-hidden ${isEmbedded ? 'min-h-[600px]' : ''}`}>
-      {/* Background Decorative Elements */}
       <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-[#EE8F66]/5 rounded-full blur-[100px] z-0" />
       <div className="absolute bottom-[-10%] right-[-10%] w-[50%] h-[50%] bg-[#A39161]/5 rounded-full blur-[120px] z-0" />
 
@@ -62,7 +55,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin, logoUrl, isEmbedded 
               <img 
                 src={logoUrl} 
                 alt="Trotamundo Logo" 
-                className="h-40 md:h-56 w-auto object-contain" 
+                className="h-32 md:h-48 w-auto object-contain transition-transform hover:scale-105 duration-700" 
               />
             </div>
           ) : (
@@ -114,7 +107,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin, logoUrl, isEmbedded 
 
         {view === 'passenger-login' && (
           <div className="max-w-md mx-auto animate-in fade-in zoom-in duration-400">
-            <div className="bg-white p-10 rounded-[3rem] shadow-2xl border border-[#EE8F66]/10 space-y-8">
+            <div className="bg-white p-10 rounded-[3rem] shadow-2xl border border-[#EE8F66]/10 space-y-8 relative">
               <div className="text-left flex items-center gap-4 mb-2">
                 <button onClick={() => {setView('selection'); setError('');}} className="p-2 text-[#A39161] hover:text-[#EE8F66] transition-colors bg-[#FFFAF5] rounded-full">
                   <ArrowLeft size={18} />
@@ -144,7 +137,7 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin, logoUrl, isEmbedded 
                   </div>
                 </div>
                 
-                {error && <p className="text-red-500 text-xs font-bold bg-red-50 p-4 rounded-xl border border-red-100 text-center">{error}</p>}
+                {error && <p className="text-red-500 text-xs font-bold bg-red-50 p-4 rounded-xl border border-red-100 text-center animate-bounce">{error}</p>}
                 
                 <button 
                   type="submit"
@@ -154,6 +147,10 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin, logoUrl, isEmbedded 
                   {loading ? <Loader2 size={18} className="animate-spin" /> : 'Confirmar e Acessar'}
                 </button>
               </form>
+
+              <div className="flex items-center gap-2 justify-center text-[10px] font-bold text-[#A39161]/60 uppercase tracking-widest">
+                <Info size={12} /> Dica de teste: Use PARIS24
+              </div>
             </div>
           </div>
         )}
@@ -199,13 +196,11 @@ const LandingPage: React.FC<LandingPageProps> = ({ onLogin, logoUrl, isEmbedded 
                   Acessar Dashboard
                 </button>
               </form>
-            </div>
-          </div>
-        )}
 
-        {!isEmbedded && (
-          <div className="pt-20 flex flex-col items-center">
-            <p className="text-[#A39161]/30 text-[9px] font-black uppercase tracking-[0.8em]">VIAGENS PERSONALIZADAS PARA VOCÊ</p>
+              <div className="flex items-center gap-2 justify-center text-[10px] font-bold text-white/30 uppercase tracking-widest">
+                <Info size={12} /> Dica de teste: Use ADMIN123
+              </div>
+            </div>
           </div>
         )}
       </div>

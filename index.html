@@ -7,13 +7,13 @@
     <title>Trotamundo Viagens</title>
     <meta name="theme-color" content="#EE8F66">
     
-    <!-- Favicon Inline para evitar erro 404 -->
+    <!-- Favicon Inline -->
     <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌍</text></svg>">
     
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- Babel para transpilar TSX no navegador -->
+    <!-- Babel standalone -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -41,7 +41,6 @@
     </style>
 
     <script>
-      // Polyfill
       window.process = { env: { API_KEY: "" } };
     </script>
 

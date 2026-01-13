@@ -11,7 +11,7 @@ if (rootElement) {
       <App />
     </React.StrictMode>
   );
-  console.log("✅ Trotamundo Online");
+  console.log("🌍 Trotamundo Viagens v1.0.3 Online");
 } else {
   console.error("❌ Elemento root não encontrado");
 }

@@ -3,7 +3,7 @@
   "version": 2,
   "headers": [
     {
-      "source": "/(.*).tsx",
+      "source": "/(.*)\\.(tsx|ts|jsx)",
       "headers": [
         {
           "key": "Content-Type",
@@ -12,15 +12,6 @@
         {
           "key": "X-Content-Type-Options",
           "value": "nosniff"
-        }
-      ]
-    },
-    {
-      "source": "/(.*).ts",
-      "headers": [
-        {
-          "key": "Content-Type",
-          "value": "application/javascript; charset=utf-8"
         }
       ]
     }

@@ -63,11 +63,12 @@
     <div id="root"></div>
     
     <!-- 
-      Removemos data-type="module" para evitar que o navegador tente 
-      carregar o index.tsx como um módulo ES nativo antes do Babel.
+      O data-type="module" é fundamental quando o arquivo index.tsx 
+      contém declarações 'import'. Sem ele, o Babel não processa os módulos corretamente.
     -->
     <script 
       type="text/babel" 
+      data-type="module"
       data-presets="react,typescript" 
       src="index.tsx"
     ></script>

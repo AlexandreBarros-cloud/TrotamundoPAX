@@ -3,22 +3,22 @@
   "version": 2,
   "headers": [
     {
-      "source": "/(.*).tsx",
+      "source": "/(.*)\\.(tsx|ts|jsx)",
       "headers": [
-        { "key": "Content-Type", "value": "text/javascript; charset=utf-8" },
-        { "key": "X-Content-Type-Options", "value": "nosniff" }
-      ]
-    },
-    {
-      "source": "/(.*).ts",
-      "headers": [
-        { "key": "Content-Type", "value": "text/javascript; charset=utf-8" }
+        {
+          "key": "Content-Type",
+          "value": "application/javascript; charset=utf-8"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        }
       ]
     }
   ],
   "rewrites": [
     {
-      "source": "/((?!.*\\.(tsx|ts|js|json|png|jpg|svg|css|ico)).*)",
+      "source": "/((?!.*\\.[a-zA-Z0-9]+$).*)",
       "destination": "/index.html"
     }
   ]

@@ -6,60 +6,59 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Trotamundo Viagens</title>
     <meta name="theme-color" content="#EE8F66">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="default">
-    <meta name="apple-mobile-web-app-title" content="Trotamundo">
-    <link rel="apple-touch-icon" href="https://i.imgur.com/YV7h8Iq.png">
-    <link rel="manifest" href="manifest.json">
     
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
     <style>
         .font-abril { font-family: 'Abril Fatface', cursive; }
         .font-roboto { font-family: 'Roboto', sans-serif; }
-        body { 
-          overscroll-behavior-y: none;
-          -webkit-tap-highlight-color: transparent;
-          background-color: #FFFAF5;
-          margin: 0;
-          padding: 0;
-        }
+        body { background-color: #FFFAF5; margin: 0; padding: 0; }
         #root:empty {
           display: flex;
           align-items: center;
           justify-content: center;
           height: 100vh;
-          background: #FFFAF5;
         }
         #root:empty::after {
-          content: "Iniciando Trotamundo...";
+          content: "Sincronizando Trotamundo...";
           font-family: 'Abril Fatface', cursive;
           color: #EE8F66;
           font-size: 1.5rem;
           animation: pulse 1.5s infinite;
         }
-        @keyframes pulse {
-          0% { opacity: 0.5; }
-          50% { opacity: 1; }
-          100% { opacity: 0.5; }
-        }
-        .error-overlay {
-          position: fixed;
-          top: 0; left: 0; right: 0; bottom: 0;
-          background: white;
-          padding: 20px;
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          justify-content: center;
-          text-align: center;
-          z-index: 9999;
-          font-family: sans-serif;
+        @keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+        .fatal-error {
+          position: fixed; top: 0; left: 0; right: 0; bottom: 0;
+          background: white; z-index: 9999; padding: 40px;
+          display: flex; flex-direction: column; align-items: center; justify-content: center;
+          text-align: center; font-family: sans-serif;
         }
     </style>
-<script type="importmap">
+
+    <script>
+      // Injeção imediata para evitar ReferenceError: process is not defined
+      window.process = { env: { API_KEY: "" } };
+      
+      window.onerror = function(msg, url, line, col, error) {
+        const root = document.getElementById('root');
+        if (root) {
+          root.innerHTML = `
+            <div class="fatal-error">
+              <h1 style="color: #EE8F66; font-family: 'Abril Fatface';">Erro de Carregamento</h1>
+              <p style="color: #666;">O sistema não conseguiu iniciar os módulos necessários.</p>
+              <pre style="background: #f8f8f8; pading: 15px; border-radius: 8px; font-size: 12px; max-width: 90%; overflow: auto;">${msg}\nNo arquivo: ${url}\nLinha: ${line}</pre>
+              <button onclick="location.reload()" style="margin-top: 20px; background: #EE8F66; color: white; border: none; padding: 12px 25px; border-radius: 10px; cursor: pointer; font-weight: bold;">Recarregar Sistema</button>
+            </div>
+          `;
+        }
+        return false;
+      };
+    </script>
+
+    <script type="importmap">
 {
   "imports": {
     "react": "https://esm.sh/react@19.0.0",
@@ -72,37 +71,10 @@
   }
 }
 </script>
-<script>
-  // Captura erros críticos antes mesmo do React carregar
-  window.onerror = function(msg, url, line) {
-    const root = document.getElementById('root');
-    if (root) {
-      root.innerHTML = `
-        <div class="error-overlay">
-          <h2 style="color: #EE8F66; font-family: 'Abril Fatface'; font-size: 2rem;">Ops! Algo deu errado.</h2>
-          <p style="color: #666; max-width: 300px; margin: 10px auto;">Ocorreu um erro técnico ao iniciar o sistema.</p>
-          <pre style="background: #f4f4f4; padding: 10px; border-radius: 8px; font-size: 10px; text-align: left; max-width: 90vw; overflow: auto;">${msg}\nLinha: ${line}</pre>
-          <button onclick="location.reload()" style="margin-top: 20px; background: #EE8F66; color: white; border: none; padding: 12px 24px; border-radius: 12px; font-weight: bold;">Tentar Novamente</button>
-        </div>
-      `;
-    }
-    return false;
-  };
-</script>
 </head>
 <body class="bg-[#FFFAF5] text-slate-900 font-roboto">
     <div id="root"></div>
+    <!-- O script index.tsx deve ser carregado como módulo -->
     <script type="module" src="index.tsx"></script>
-    <script>
-      if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-          navigator.serviceWorker.register('/sw.js').then(reg => {
-            console.log('SW Trotamundo Ativo');
-          }).catch(err => {
-            console.warn('Erro ao registrar SW:', err);
-          });
-        });
-      }
-    </script>
 </body>
 </html>

@@ -2,7 +2,13 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { Suggestion } from "../types.ts";
 
-const getAI = () => new GoogleGenAI({ apiKey: process.env.API_KEY });
+const getAI = () => {
+  const apiKey = process.env.API_KEY;
+  if (!apiKey) {
+    console.warn("⚠️ API_KEY não encontrada em process.env. Verifique as configurações do Vercel.");
+  }
+  return new GoogleGenAI({ apiKey: apiKey || "MISSING_KEY" });
+};
 
 export const getDestinationSuggestions = async (destination: string, documentNames: string[]): Promise<Suggestion[]> => {
   try {

@@ -3,31 +3,36 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App.tsx';
 
-// Polifill de segurança para evitar erro de "process is not defined" no navegador
-if (typeof window !== 'undefined' && !window.process) {
-  window.process = { env: {} } as any;
-}
+console.log("🚀 [Trotamundo] Iniciando script de entrada...");
 
-console.log("%c Trotamundo %c Booting Engine...", "color: white; background: #EE8F66; padding: 2px 6px; border-radius: 4px;", "color: #A39161;");
+const renderApp = () => {
+  const rootElement = document.getElementById('root');
+  
+  if (!rootElement) {
+    console.error("❌ Erro: Elemento #root não encontrado no DOM.");
+    return;
+  }
 
-const rootElement = document.getElementById('root');
-
-if (rootElement) {
   try {
+    console.log("📦 [Trotamundo] Criando root do React...");
     const root = ReactDOM.createRoot(rootElement);
+    
+    console.log("🎨 [Trotamundo] Renderizando componente App...");
     root.render(
       <React.StrictMode>
         <App />
       </React.StrictMode>
     );
-    console.log("Trotamundo: Renderização concluída com sucesso.");
-  } catch (error) {
-    console.error("Erro fatal na inicialização:", error);
-    rootElement.innerHTML = `
-      <div style="padding: 40px; text-align: center; font-family: sans-serif;">
-        <h2 style="color: #EE8F66;">Erro de Inicialização</h2>
-        <p>Não foi possível carregar os componentes. Verifique sua conexão ou a chave da API.</p>
-      </div>
-    `;
+    console.log("✅ [Trotamundo] Renderização solicitada com sucesso.");
+  } catch (err) {
+    console.error("💥 Erro crítico durante a renderização:", err);
+    throw err; // Lança para ser pego pelo window.onerror no index.html
   }
+};
+
+// Pequeno delay para garantir que o DOM e o importmap estejam prontos
+if (document.readyState === 'complete') {
+  renderApp();
+} else {
+  window.addEventListener('load', renderApp);
 }

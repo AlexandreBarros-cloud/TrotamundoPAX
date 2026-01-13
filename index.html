@@ -7,6 +7,9 @@
     <title>Trotamundo Viagens</title>
     <meta name="theme-color" content="#EE8F66">
     
+    <!-- Favicon Inline para evitar erro 404 -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌍</text></svg>">
+    
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
@@ -38,7 +41,7 @@
     </style>
 
     <script>
-      // Polyfill para compatibilidade
+      // Polyfill
       window.process = { env: { API_KEY: "" } };
     </script>
 
@@ -60,12 +63,11 @@
     <div id="root"></div>
     
     <!-- 
-      Usamos type="text/babel" para o Babel transpile o arquivo .tsx.
-      Adicionamos data-type="module" para que o Babel suporte 'import' dentro do index.tsx.
+      Removemos data-type="module" para evitar que o navegador tente 
+      carregar o index.tsx como um módulo ES nativo antes do Babel.
     -->
     <script 
       type="text/babel" 
-      data-type="module" 
       data-presets="react,typescript" 
       src="index.tsx"
     ></script>

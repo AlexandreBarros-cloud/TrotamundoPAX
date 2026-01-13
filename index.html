@@ -5,15 +5,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Trotamundo Viagens</title>
-    <meta name="theme-color" content="#EE8F66">
     
-    <!-- Favicon Inline -->
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🌍</text></svg>">
-    
-    <!-- Tailwind CSS -->
+    <!-- Tailwind e Babel -->
     <script src="https://cdn.tailwindcss.com"></script>
-    
-    <!-- Babel standalone -->
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -24,25 +18,12 @@
         .font-abril { font-family: 'Abril Fatface', cursive; }
         .font-roboto { font-family: 'Roboto', sans-serif; }
         body { background-color: #FFFAF5; margin: 0; padding: 0; }
-        #root:empty {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          height: 100vh;
-        }
         #root:empty::after {
-          content: "Sincronizando Trotamundo...";
-          font-family: 'Abril Fatface', cursive;
-          color: #EE8F66;
-          font-size: 1.5rem;
-          animation: pulse 1.5s infinite;
+          content: "Iniciando Trotamundo...";
+          position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%);
+          font-family: 'Abril Fatface', cursive; color: #EE8F66; font-size: 1.2rem;
         }
-        @keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
     </style>
-
-    <script>
-      window.process = { env: { API_KEY: "" } };
-    </script>
 
     <script type="importmap">
 {
@@ -58,24 +39,17 @@
 }
 </script>
 </head>
-<body class="bg-[#FFFAF5] text-slate-900 font-roboto">
+<body>
     <div id="root"></div>
-    
-    <!-- Código de inicialização Inline para contornar erro de MIME type no entry-point -->
     <script type="text/babel" data-type="module" data-presets="react,typescript">
       import React from 'react';
-      import ReactDOM from 'react-dom/client';
+      import { createRoot } from 'react-dom/client';
       import App from './App.tsx';
 
-      const rootElement = document.getElementById('root');
-      if (rootElement) {
-        const root = ReactDOM.createRoot(rootElement);
-        root.render(
-          <React.StrictMode>
-            <App />
-          </React.StrictMode>
-        );
-        console.log("🌍 Trotamundo Viagens v1.0.4 Online");
+      const container = document.getElementById('root');
+      if (container) {
+        const root = createRoot(container);
+        root.render(<App />);
       }
     </script>
 </body>

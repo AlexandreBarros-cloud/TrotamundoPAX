@@ -2,17 +2,12 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { Suggestion } from "../types.ts";
 
-const getAI = () => {
-  const apiKey = process.env.API_KEY;
-  if (!apiKey) {
-    console.warn("⚠️ API_KEY não encontrada em process.env. Verifique as configurações do Vercel.");
-  }
-  return new GoogleGenAI({ apiKey: apiKey || "MISSING_KEY" });
-};
+// Global initialization helper removed to ensure compliance with "initialize right before call" rule
 
 export const getDestinationSuggestions = async (destination: string, documentNames: string[]): Promise<Suggestion[]> => {
   try {
-    const ai = getAI();
+    // Creating new instance directly before call with process.env.API_KEY as per guidelines
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY as string });
     const response = await ai.models.generateContent({
       model: "gemini-3-flash-preview",
       contents: `Você é um guia especializado da Trotamundo Viagens. 
@@ -54,7 +49,8 @@ export const getDestinationSuggestions = async (destination: string, documentNam
 
 export const editTravelPhoto = async (base64Data: string, prompt: string): Promise<string | null> => {
   try {
-    const ai = getAI();
+    // Creating new instance directly before call with process.env.API_KEY as per guidelines
+    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY as string });
     const matches = base64Data.match(/^data:([^;]+);base64,(.+)$/);
     if (!matches) throw new Error("Invalid base64 data");
     

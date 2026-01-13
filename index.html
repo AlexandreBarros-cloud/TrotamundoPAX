@@ -35,33 +35,17 @@
           animation: pulse 1.5s infinite;
         }
         @keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
-        .fatal-error {
-          position: fixed; top: 0; left: 0; right: 0; bottom: 0;
-          background: white; z-index: 9999; padding: 40px;
-          display: flex; flex-direction: column; align-items: center; justify-content: center;
-          text-align: center; font-family: sans-serif;
-        }
     </style>
 
     <script>
-      // Polyfill de segurança
+      // Polyfill para compatibilidade global
       window.process = { env: { API_KEY: "" } };
       
       window.onerror = function(msg, url, line) {
-        if (msg.includes('MIME type')) {
-          console.warn('Detectado erro de MIME type, tentando contornar com Babel...');
-          return;
-        }
-        const root = document.getElementById('root');
-        if (root && !root.innerHTML.includes('fatal-error')) {
-          root.innerHTML = `
-            <div class="fatal-error">
-              <h1 style="color: #EE8F66; font-family: 'Abril Fatface';">Ajustando Motores...</h1>
-              <p style="color: #666;">Estamos configurando a compatibilidade do seu navegador.</p>
-              <button onclick="location.reload()" style="margin-top: 20px; background: #EE8F66; color: white; border: none; padding: 12px 25px; border-radius: 10px; cursor: pointer; font-weight: bold;">Recarregar</button>
-            </div>
-          `;
-        }
+        // Ignora erros conhecidos de ambiente de desenvolvimento/demo
+        if (msg.includes('tailwindcss') || msg.includes('Babel')) return;
+        
+        console.error("Erro detectado:", msg, "em", url, "linha", line);
       };
     </script>
 
@@ -83,9 +67,8 @@
     <div id="root"></div>
     
     <!-- 
-      IMPORTANTE: Usamos type="text/babel" para que o navegador não tente ler como JS puro.
-      O Babel vai ler este arquivo, transpilá-lo e então executá-lo.
-      data-type="module" avisa o Babel para tratar como um módulo ES.
+      Usamos type="text/babel" para que o Babel transpile o arquivo .tsx 
+      diretamente no navegador, contornando a falta de um build step local.
     -->
     <script 
       type="text/babel" 

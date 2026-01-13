@@ -50,12 +50,11 @@ const SuggestionCard = ({ suggestion }) => {
 };
 
 const PassengerDashboard = ({ trips, onOpenChat, onLogout, hideHeaderFooter = false }) => {
-  // Fix: Explicitly type state arrays/objects to prevent 'never[]' or 'unknown' inference
-  const [decryptedTrips, setDecryptedTrips] = useState<any[]>([]);
+  const [decryptedTrips, setDecryptedTrips] = useState([]);
   const [decrypting, setDecrypting] = useState(true);
-  const [selectedAgendaTrip, setSelectedAgendaTrip] = useState<any | null>(null);
-  const [aiSuggestions, setAiSuggestions] = useState<Record<string, any>>({});
-  const [loadingSuggestions, setLoadingSuggestions] = useState<Record<string, boolean>>({});
+  const [selectedAgendaTrip, setSelectedAgendaTrip] = useState(null);
+  const [aiSuggestions, setAiSuggestions] = useState({});
+  const [loadingSuggestions, setLoadingSuggestions] = useState({});
   const [secureMode] = useState(isSecureConnection());
 
   useEffect(() => {
@@ -88,7 +87,7 @@ const PassengerDashboard = ({ trips, onOpenChat, onLogout, hideHeaderFooter = fa
       if (!aiSuggestions[trip.id] && !loadingSuggestions[trip.id]) {
         setLoadingSuggestions(prev => ({ ...prev, [trip.id]: true }));
         try {
-          const docs = trip.documents.map((d: any) => d.name);
+          const docs = trip.documents.map((d) => d.name);
           const result = await getDestinationSuggestions(trip.destination, docs);
           setAiSuggestions(prev => ({ ...prev, [trip.id]: result }));
         } catch (e) {
@@ -278,12 +277,12 @@ const PassengerDashboard = ({ trips, onOpenChat, onLogout, hideHeaderFooter = fa
               <h3 className="font-abril text-6xl md:text-8xl tracking-tight leading-none">${selectedAgendaTrip.destination}</h3>
             </div>
             <div className="flex-1 overflow-y-auto p-10 sm:p-14 space-y-16 bg-[#FFFAF5]/30">
-              ${Object.entries(selectedAgendaTrip.agenda.reduce((acc: Record<string, any[]>, item: any) => {
+              ${Object.entries((selectedAgendaTrip.agenda || []).reduce((acc: any, item: any) => {
                   const date = item.date;
                   if (!acc[date]) acc[date] = [];
                   acc[date].push(item);
                   return acc;
-                }, {} as Record<string, any[]>)).sort((a, b) => a[0].localeCompare(b[0])).map(([date, items]) => html`
+                }, {})).sort((a: any, b: any) => a[0].localeCompare(b[0])).map(([date, items]: [string, any]) => html`
                 <div key=${date} className="space-y-8">
                   <div className="flex items-center gap-6">
                     <div className="bg-white text-[#EE8F66] px-8 py-3 rounded-[1.5rem] text-xs font-black uppercase tracking-[0.2em] border border-[#EE8F66]/10 shadow-sm">
@@ -292,7 +291,8 @@ const PassengerDashboard = ({ trips, onOpenChat, onLogout, hideHeaderFooter = fa
                     <div className="flex-1 h-px bg-[#EE8F66]/10" />
                   </div>
                   <div className="space-y-6 pl-2">
-                    ${(items as any[]).slice().sort((a,b) => a.time.localeCompare(b.time)).map(item => html`
+                    ${/* Fix: Cast items to any[] to ensure slice() is available and prevent "unknown" type error */
+                      (items as any[]).slice().sort((a: any, b: any) => a.time.localeCompare(b.time)).map((item: any) => html`
                       <div key=${item.id} className="flex gap-8 group/item">
                         <div className="flex flex-col items-center">
                           <span className="text-xs font-black text-[#3D3D3D] bg-white px-3 py-1.5 rounded-xl border border-[#EE8F66]/10 group-hover/item:border-[#EE8F66] transition-colors">${item.time}</span>

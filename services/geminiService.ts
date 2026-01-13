@@ -1,4 +1,3 @@
-
 import { GoogleGenAI, Type } from "@google/genai";
 
 export const getDestinationSuggestions = async (destination, documentNames) => {
@@ -43,14 +42,17 @@ export const getDestinationSuggestions = async (destination, documentNames) => {
   }
 };
 
-export const editTravelPhoto = async (base64Data, prompt) => {
+/**
+ * Edit travel photos using Gemini 2.5 Flash Image model.
+ * Adds/removes elements or changes the scene based on a text prompt.
+ */
+export const editTravelPhoto = async (base64Image: string, prompt: string) => {
   try {
     const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-    const matches = base64Data.match(/^data:([^;]+);base64,(.+)$/);
-    if (!matches) throw new Error("Invalid base64 data");
-    
-    const mimeType = matches[1];
-    const data = matches[2];
+    // Strip data URL prefix to get raw base64 data for the Gemini API
+    const base64Data = base64Image.includes('base64,') ? base64Image.split('base64,')[1] : base64Image;
+    const mimeMatch = base64Image.match(/^data:(image\/[a-zA-Z]+);base64,/);
+    const mimeType = mimeMatch ? mimeMatch[1] : 'image/png';
 
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash-image',
@@ -58,7 +60,7 @@ export const editTravelPhoto = async (base64Data, prompt) => {
         parts: [
           {
             inlineData: {
-              data: data,
+              data: base64Data,
               mimeType: mimeType,
             },
           },
@@ -69,18 +71,16 @@ export const editTravelPhoto = async (base64Data, prompt) => {
       },
     });
 
-    if (response.candidates && response.candidates[0].content && response.candidates[0].content.parts) {
-      for (const part of response.candidates[0].content.parts) {
-        if (part.inlineData) {
-          const base64EncodeString = part.inlineData.data;
-          const returnedMimeType = part.inlineData.mimeType;
-          return `data:${returnedMimeType};base64,${base64EncodeString}`;
-        }
+    // Iterate through response parts to find the generated image (inlineData)
+    const parts = response.candidates?.[0]?.content?.parts || [];
+    for (const part of parts) {
+      if (part.inlineData) {
+        return `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`;
       }
     }
     return null;
   } catch (error) {
-    console.error("Error editing photo with Gemini:", error);
+    console.error("Error editing travel photo:", error);
     return null;
   }
 };

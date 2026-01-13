@@ -1,12 +1,13 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import { Send, X, Bot, Sparkles, Loader2, User, Headset } from 'lucide-react';
-import { ChatMessage, Trip } from '../types';
+import { ChatMessage, Trip } from '../types.ts';
 import { GoogleGenAI } from "@google/genai";
 
 interface ChatWindowProps {
   trip: Trip;
   userRole: 'passenger' | 'agency';
+  // Fix: changed from void to () => void to allow function passing and event handling
   onClose: () => void;
   onSendMessage: (text: string) => void;
 }
@@ -52,7 +53,6 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ trip, userRole, onClose, onSend
 
   return (
     <div className="fixed inset-0 sm:inset-auto sm:right-10 sm:bottom-10 sm:w-[420px] sm:h-[680px] bg-white shadow-3xl z-[100] flex flex-col rounded-t-[2.5rem] sm:rounded-[2.5rem] border border-[#EE8F66]/10 overflow-hidden animate-in slide-in-from-bottom duration-500">
-      {/* Header Updated with Orange/Gold Gradient */}
       <div className="bg-gradient-to-r from-[#EE8F66] to-[#A39161] p-6 text-white flex items-center justify-between">
         <div className="flex items-center gap-4">
           <div className="w-12 h-12 rounded-2xl bg-white/20 flex items-center justify-center border border-white/20">
@@ -73,7 +73,6 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ trip, userRole, onClose, onSend
         </button>
       </div>
 
-      {/* Messages */}
       <div ref={scrollRef} className="flex-1 overflow-y-auto p-6 space-y-6 bg-[#FFFAF5]/50">
         {trip.messages.length === 0 && (
           <div className="text-center py-16 px-10">
@@ -93,16 +92,12 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ trip, userRole, onClose, onSend
                   : 'bg-white text-[#3D3D3D] rounded-bl-none border border-[#EE8F66]/5'
               }`}>
                 {msg.text}
-                <div className={`text-[9px] mt-2 font-black uppercase tracking-widest ${isMe ? 'text-white/40' : 'text-[#A39161]/40'}`}>
-                  {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                </div>
               </div>
             </div>
           );
         })}
       </div>
 
-      {/* Input Area */}
       <div className="p-6 bg-white border-t border-[#EE8F66]/10 space-y-4">
         {userRole === 'agency' && trip.messages.length > 0 && (
           <button 
@@ -121,11 +116,11 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ trip, userRole, onClose, onSend
             onChange={(e) => setInputText(e.target.value)}
             onKeyPress={(e) => e.key === 'Enter' && handleSend()}
             placeholder="Digite aqui..."
-            className="flex-1 bg-transparent border-none px-4 py-3 text-sm focus:ring-0 outline-none text-[#3D3D3D] font-medium placeholder:text-[#A39161]/40"
+            className="flex-1 bg-transparent border-none px-4 py-3 text-sm focus:ring-0 outline-none text-[#3D3D3D] font-medium"
           />
           <button 
             onClick={handleSend}
-            className="bg-gradient-to-r from-[#EE8F66] to-[#A39161] text-white p-4 rounded-full hover:shadow-lg transition-all disabled:opacity-20"
+            className="bg-gradient-to-r from-[#EE8F66] to-[#A39161] text-white p-4 rounded-full"
             disabled={!inputText.trim()}
           >
             <Send size={18} />

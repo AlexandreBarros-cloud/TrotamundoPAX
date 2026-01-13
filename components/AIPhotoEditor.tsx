@@ -1,7 +1,7 @@
 
 import React, { useState, useRef } from 'react';
 import { Upload, Sparkles, Download, RotateCcw, Loader2 } from 'lucide-react';
-import { editTravelPhoto } from '../services/geminiService';
+import { editTravelPhoto } from '../services/geminiService.ts';
 
 const AIPhotoEditor: React.FC = () => {
   const [originalImage, setOriginalImage] = useState<string | null>(null);
@@ -66,7 +66,6 @@ const AIPhotoEditor: React.FC = () => {
             <Upload size={32} />
           </div>
           <h3 className="font-bold text-slate-800">Carregue uma foto</h3>
-          <p className="text-slate-500 text-sm">Arraste ou clique para selecionar uma foto da sua viagem</p>
           <input 
             type="file" 
             ref={fileInputRef} 
@@ -92,48 +91,21 @@ const AIPhotoEditor: React.FC = () => {
           </div>
 
           <div className="bg-white p-6 rounded-2xl shadow-sm border space-y-4">
-            <label className="block">
-              <span className="text-slate-700 font-semibold text-sm">O que deseja fazer?</span>
-              <textarea
-                value={prompt}
-                onChange={(e) => setPrompt(e.target.value)}
-                placeholder="Ex: 'Adicione um filtro vintage', 'Remova a pessoa no fundo', 'Deixe o céu mais azul'..."
-                className="mt-1 w-full p-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all outline-none resize-none h-24"
-              />
-            </label>
-
-            {error && <p className="text-red-500 text-sm bg-red-50 p-2 rounded">{error}</p>}
+            <textarea
+              value={prompt}
+              onChange={(e) => setPrompt(e.target.value)}
+              placeholder="Ex: 'Adicione um filtro vintage'..."
+              className="mt-1 w-full p-3 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 outline-none resize-none h-24"
+            />
 
             <div className="flex gap-2">
               <button
                 onClick={handleApplyAI}
                 disabled={loading || !prompt.trim()}
-                className="flex-1 bg-blue-600 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+                className="flex-1 bg-blue-600 text-white font-bold py-3 rounded-xl flex items-center justify-center gap-2"
               >
                 <Sparkles size={20} />
                 Aplicar Mágica
-              </button>
-              
-              {editedImage && (
-                <button
-                  onClick={downloadImage}
-                  className="bg-green-500 text-white p-3 rounded-xl hover:bg-green-600 transition-all"
-                  title="Baixar Foto"
-                >
-                  <Download size={24} />
-                </button>
-              )}
-              
-              <button
-                onClick={() => {
-                  setOriginalImage(null);
-                  setEditedImage(null);
-                  setPrompt('');
-                }}
-                className="bg-slate-100 text-slate-600 p-3 rounded-xl hover:bg-slate-200 transition-all"
-                title="Começar de novo"
-              >
-                <RotateCcw size={24} />
               </button>
             </div>
           </div>

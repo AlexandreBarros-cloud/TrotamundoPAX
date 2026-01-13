@@ -1,13 +1,13 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import Layout from './components/Layout';
-import LandingPage from './components/LandingPage';
-import PassengerDashboard from './components/PassengerDashboard';
-import AgencyDashboard from './components/AgencyDashboard';
-import ChatWindow from './components/ChatWindow';
-import NotificationToast from './components/NotificationToast';
-import { Trip, AppState, ChatMessage } from './types';
-import { isSecureConnection, encryptData } from './services/securityService';
+import Layout from './components/Layout.tsx';
+import LandingPage from './components/LandingPage.tsx';
+import PassengerDashboard from './components/PassengerDashboard.tsx';
+import AgencyDashboard from './components/AgencyDashboard.tsx';
+import ChatWindow from './components/ChatWindow.tsx';
+import NotificationToast from './components/NotificationToast.tsx';
+import { Trip, AppState, ChatMessage } from './types.ts';
+import { isSecureConnection, encryptData } from './services/securityService.ts';
 
 const DEFAULT_LOGO = `data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCA1MDAgMzUwIj4KICA8ZGVmcz4KICAgIDxsaW5lYXJHcmFkaWVudCBpZD0iZ3JhZDEiIHgxPSIwJSIgeTE9IjAlIiB4Mj0iMTAwJSIgeTI9IjEwMCUiPgogICAgICA8c3RvcCBvZmZzZXQ9IjAlIiBzdHlsZT0ic3RvcC1jb2xvcjojRUU4RjY2O3N0b3Atb3BhY2l0eToxIiAvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEwMCUiIHN0eWxlPSJzdG9wLWNvbG9yOiNBMzkxNjE7c3RvcC1vcGFjaXR5OjEiIC8+CiAgICA8L2xpbmVhckdyYWRpZW50PgogIDwvZGVmcz4KICA8ZyBmaWxsPSJub25lIiBzdHJva2U9InVybCgjZ3JhZDEpIiBzdHJva2Utd3lkdGg9IjIuNSI+CiAgICA8Y2lyY2xlIGN4PSIyNTAiIGN5PSIxMDAiIHI9IjgwIi8+CiAgICA8cGF0aCBkPSJNMjUwIDIwIEMyODAgNDAgMzAwIDgwIDI1MCAxODAgQzIwMCA4MCAyMjAgNDAgMjUwIDIwIiBzdHJva2Utd3lkdGg9IjEuNSIgc3Ryb2tlLW9wYWNpdHk9IjAuNiIvPgogICAgPHBhdGggZD0iTTE3NSAxMDAgQzIwMCA4MCAzMDAgODAgMzI1IDEwMCIgc3Ryb2tlLXdpZHRoPSIxLjUiIHN0cm9rZS1vcGFjaXR5PSIwLjYiLz4KICAgIDxwYXRoIGQ9Ik0xODggNjAgQzIyMCA1MCAyODAgNTAgMzEyIDYwIiBzdHJva2Utd3lkdGg9IjEuNSIgc3Ryb2tlLW9wYWNpdHk9IjAuNiIvPgogICAgPHBhdGggZD0iTTE4OCAxNDAgQzIyMCAxNTAgMjgwIDE1MCAzMTIgMTQwIiBzdHJva2Utd3lkdGg9IjEuNSIgc3Ryb2tlLW9wYWNpdHk9IjAuNiIvPgogIDwvZz4KICA8ZyB0cmFuc2Zvcm09InRyYW5zbGF0ZSgzMTAsIDEzMCkiPgogICAgPGNpcmNsZSBjeD0iMzAiIGN5PSIzMCIgcj0iMzAiIGZpbGw9IndoaXRlIiBzdHJva2U9InVybCgjZ3JhZDEpIiBzdHJva2Utd3lkdGg9IjIiLz4KICAgIDxyZWN0IHg9IjE1LFkyNSIgd3lkdGg9IjMwIiBoZWlnaHQ9IjIwIiByeD0iMyIgZmlsbD0ibm9uZSIgc3Ryb2tlPSJ1cmwoI2dyYWQxKSIgc3Ryb2tlLXdpZHRoPSIyIi8+CiAgICA8cGF0aCBkPSJNMjIgMjUgViAyMiBBMiAyIDAgMCAxIDIzIDIwIEggMzcgQTIgMiAwIDAgMSAzOCAyMiBWIDI1IiBmaWxsPSJub25lIiBzdHJva2U9InVybCgjZ3JhZDEpIiBzdHJva2Utd3lkdGg9IjIiLz4KICA8L2c+CiAgPHRleHQgeD0iMjUwIiB5PSIyNzAiIHRleHQtYW5jaG9yPSJtaWRkbGUiIGZvbnQtZmFtaWx5PSInQWJyaWwgRmF0ZmFjZScsIHNlcmlmIiBmb250LXNpemU9IjY4IiBmaWxsPSIjRUU4RjY2IiBzdHlsZT0ibGV0dGVyLXNwYWNpbmc6IDRweDsiPlRST1RBAU1VTkRPPC90ZXh0PgogIDx0ZXh0IHg9IjI1MCIgeT0iMzIwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmb250LWZhbWlseT0ic2Fucy1zZXJpZiIgZm9udC1zaXplPSIyOCIgZmlsbD0iI0EzOTE2MSIgZm9udC13ZWlnaHQ9IjMwMCIgc3R5bGU9ImxldHRlci1zcGFjaW5nOiA0cHg7IG9wYWNpdHk6IDAuODsiPlNvbHVjw6VlcyBlbSB2aWFnZW5zPC90ZXh0Pgo8L3N2Zz4=`;
 
@@ -68,8 +68,6 @@ const App: React.FC = () => {
 
   const [state, setState] = useState<AppState>(() => {
     const savedLogo = localStorage.getItem('trotamundo_custom_logo');
-    if (savedLogo === DEFAULT_LOGO) localStorage.removeItem('trotamundo_custom_logo');
-    
     return {
       currentView: 'landing',
       userRole: 'passenger',
@@ -96,12 +94,6 @@ const App: React.FC = () => {
   }, [trips]);
 
   useEffect(() => {
-    if ('Notification' in window && Notification.permission === 'default') {
-      Notification.requestPermission();
-    }
-  }, []);
-
-  useEffect(() => {
     trips.forEach((currentTrip) => {
       const prevTrip = prevTripsRef.current.find(t => t.id === currentTrip.id);
       if (prevTrip && currentTrip.messages.length > prevTrip.messages.length) {
@@ -111,25 +103,11 @@ const App: React.FC = () => {
           if (activeChatId !== currentTrip.id) {
             setNotification({ show: true, message: lastMsg.text, sender: senderName, tripId: currentTrip.id });
           }
-          if ('Notification' in window && Notification.permission === 'granted' && document.hidden) {
-            new Notification(`Mensagem da Trotamundo`, {
-              body: `${senderName}: ${lastMsg.text}`,
-              icon: 'https://i.imgur.com/YV7h8Iq.png'
-            });
-          }
         }
       }
     });
     prevTripsRef.current = trips;
   }, [trips, state.userRole, activeChatId]);
-
-  useEffect(() => {
-    if (state.logoUrl && state.logoUrl !== DEFAULT_LOGO) {
-      localStorage.setItem('trotamundo_custom_logo', state.logoUrl);
-    } else if (state.logoUrl === DEFAULT_LOGO) {
-      localStorage.removeItem('trotamundo_custom_logo');
-    }
-  }, [state.logoUrl]);
 
   const handleLogin = (role: 'passenger' | 'agency', code?: string) => {
     if (role === 'passenger' && code) {
@@ -162,7 +140,6 @@ const App: React.FC = () => {
       const tripWithEncryption = { ...updatedTrip, encryptedData: encryptedBlob };
       setTrips(prev => prev.map(t => t.id === updatedTrip.id ? tripWithEncryption : t));
     } catch (e) {
-      console.error("Failed to encrypt trip during update", e);
       setTrips(prev => prev.map(t => t.id === updatedTrip.id ? updatedTrip : t));
     }
   };
@@ -173,7 +150,6 @@ const App: React.FC = () => {
       const tripWithEncryption = { ...newTrip, encryptedData: encryptedBlob };
       setTrips(prev => [...prev, tripWithEncryption]);
     } catch (e) {
-      console.error("Failed to encrypt trip during addition", e);
       setTrips(prev => [...prev, newTrip]);
     }
   };

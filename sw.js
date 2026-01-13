@@ -1,18 +1,17 @@
 
-const CACHE_NAME = 'trotamundo-v4';
+const CACHE_NAME = 'trotamundo-v5';
 const STATIC_ASSETS = [
   '/',
   '/index.html',
   '/index.tsx',
+  '/App.tsx',
   '/types.ts',
   '/manifest.json',
   'https://cdn.tailwindcss.com',
   'https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Roboto:wght@300;400;500;700&display=swap',
-  'https://fonts.gstatic.com/s/abrilfatface/v19/z76dPrpfSXYGVC8Ssqqx6rlXvaJcgGE.woff2',
-  'https://esm.sh/lucide-react@^0.562.0',
-  'https://esm.sh/react@^19.2.3',
-  'https://esm.sh/react-dom@^19.2.3',
-  'https://esm.sh/@google/genai@^1.35.0',
+  'https://esm.sh/react@19.0.0',
+  'https://esm.sh/react-dom@19.0.0',
+  'https://esm.sh/lucide-react@0.460.0?external=react',
   'https://i.imgur.com/YV7h8Iq.png'
 ];
 

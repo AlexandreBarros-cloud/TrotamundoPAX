@@ -1,8 +1,8 @@
 
 import React, { useState } from 'react';
 import { Plus, Search, FileText, Edit3, MessageCircle, Upload, Calendar, Key, Globe, Compass, X, Pencil, Sparkles, User, MapPin } from 'lucide-react';
-import { Trip, DocumentType, Suggestion } from '../types';
-import { generateAccessCode } from '../services/securityService';
+import { Trip, DocumentType, Suggestion } from '../types.ts';
+import { generateAccessCode } from '../services/securityService.ts';
 
 interface AgencyDashboardProps {
   trips: Trip[];
@@ -17,7 +17,6 @@ const AgencyDashboard: React.FC<AgencyDashboardProps> = ({ trips, onAddTrip, onU
   const [activeTripId, setActiveTripId] = useState<string | null>(null);
   const [isNewTripModalOpen, setIsNewTripModalOpen] = useState(false);
   
-  // State for new trip form
   const [newTripForm, setNewTripForm] = useState<Partial<Trip>>({
     passengerName: '',
     destination: '',
@@ -26,7 +25,6 @@ const AgencyDashboard: React.FC<AgencyDashboardProps> = ({ trips, onAddTrip, onU
     endDate: '',
   });
 
-  // State for recommendation form
   const [recForm, setRecForm] = useState<Partial<Suggestion>>({
     id: undefined,
     title: '',
@@ -212,7 +210,6 @@ const AgencyDashboard: React.FC<AgencyDashboardProps> = ({ trips, onAddTrip, onU
         ))}
       </div>
 
-      {/* New Trip Modal */}
       {isNewTripModalOpen && (
         <div className="fixed inset-0 z-[120] bg-black/60 backdrop-blur-md flex items-center justify-center p-6 animate-in fade-in duration-300">
           <div className="bg-white w-full max-w-xl rounded-[3rem] shadow-2xl p-10 space-y-8 relative overflow-hidden">
@@ -252,17 +249,6 @@ const AgencyDashboard: React.FC<AgencyDashboardProps> = ({ trips, onAddTrip, onU
                     <Sparkles size={20} />
                   </button>
                 </div>
-                <p className="text-[8px] text-[#A39161] ml-4 italic">*Esta chave será usada para criptografar os dados do passageiro.</p>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5 pt-2">
-                 <div className="space-y-1.5">
-                    <label className="text-[9px] font-black uppercase tracking-widest text-[#A39161] ml-4">Data de Início</label>
-                    <input type="date" className="w-full bg-[#FFFAF5] border border-[#EE8F66]/10 rounded-2xl px-6 py-4 outline-none font-bold text-xs" value={newTripForm.startDate} onChange={e => setNewTripForm({...newTripForm, startDate: e.target.value})} />
-                 </div>
-                 <div className="space-y-1.5">
-                    <label className="text-[9px] font-black uppercase tracking-widest text-[#A39161] ml-4">Data de Retorno</label>
-                    <input type="date" className="w-full bg-[#FFFAF5] border border-[#EE8F66]/10 rounded-2xl px-6 py-4 outline-none font-bold text-xs" value={newTripForm.endDate} onChange={e => setNewTripForm({...newTripForm, endDate: e.target.value})} />
-                 </div>
               </div>
             </div>
             <div className="flex gap-4 pt-4">
@@ -273,7 +259,6 @@ const AgencyDashboard: React.FC<AgencyDashboardProps> = ({ trips, onAddTrip, onU
         </div>
       )}
 
-      {/* Recommendation Modal (Existing) */}
       {activeTripId && (
         <div className="fixed inset-0 z-[120] bg-black/60 backdrop-blur-md flex items-center justify-center p-6 animate-in fade-in duration-300">
           <div className="bg-white w-full max-w-lg rounded-[3rem] shadow-2xl p-10 space-y-8 relative overflow-hidden">
@@ -293,24 +278,6 @@ const AgencyDashboard: React.FC<AgencyDashboardProps> = ({ trips, onAddTrip, onU
               <div className="space-y-2">
                 <label className="text-[10px] font-black uppercase tracking-widest text-[#A39161]">Descrição</label>
                 <textarea value={recForm.description} onChange={(e) => setRecForm({...recForm, description: e.target.value})} placeholder="Explique por que essa atividade é imperdível..." className="w-full bg-[#FFFAF5] border border-[#EE8F66]/10 rounded-2xl px-6 py-4 outline-none focus:ring-2 focus:ring-[#EE8F66]/20 text-sm min-h-[100px] resize-none" />
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-[#A39161]">Categoria</label>
-                  <select value={recForm.type} onChange={(e) => setRecForm({...recForm, type: e.target.value as any})} className="w-full bg-[#FFFAF5] border border-[#EE8F66]/10 rounded-2xl px-4 py-4 outline-none font-bold text-xs appearance-none cursor-pointer">
-                    <option value="cultura">Cultura</option>
-                    <option value="gastronomia">Gastronomia</option>
-                    <option value="aventura">Aventura</option>
-                    <option value="relaxamento">Relaxamento</option>
-                  </select>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-[10px] font-black uppercase tracking-widest text-[#A39161]">Status</label>
-                  <div className="flex items-center gap-3 py-4">
-                    <input type="checkbox" id="isPurchased" checked={recForm.isPurchased} onChange={(e) => setRecForm({...recForm, isPurchased: e.target.checked})} className="w-5 h-5 accent-[#EE8F66]" />
-                    <label htmlFor="isPurchased" className="text-xs font-bold text-[#3D3D3D] cursor-pointer">Já Comprado?</label>
-                  </div>
-                </div>
               </div>
             </div>
             <div className="flex gap-4">

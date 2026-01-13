@@ -1,25 +1,27 @@
 
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import App from './App';
+import App from './App.tsx';
+
+console.log("%c Trotamundo %c Iniciando...", "color: white; background: #EE8F66; padding: 2px 6px; border-radius: 4px;", "color: #A39161;");
 
 const rootElement = document.getElementById('root');
-if (!rootElement) {
-  throw new Error("Could not find root element to mount to");
-}
 
-// Registro simples de Service Worker para PWA (opcional em ambiente de dev)
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('/sw.js').catch(() => {
-      // Falha silenciosa se não houver arquivo sw.js no root
-    });
-  });
+if (rootElement) {
+  try {
+    const root = ReactDOM.createRoot(rootElement);
+    root.render(
+      <React.StrictMode>
+        <App />
+      </React.StrictMode>
+    );
+  } catch (error) {
+    console.error("Erro ao montar a aplicação React:", error);
+    rootElement.innerHTML = `<div style="padding: 20px; text-align: center; color: #333;">
+      <h2 style="color: #EE8F66;">Ops! Algo deu errado.</h2>
+      <p>Houve um erro ao carregar o aplicativo. Verifique o console para mais detalhes.</p>
+    </div>`;
+  }
+} else {
+  console.error("Elemento root não encontrado!");
 }
-
-const root = ReactDOM.createRoot(rootElement);
-root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);

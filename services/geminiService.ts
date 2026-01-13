@@ -1,10 +1,9 @@
 
 import { GoogleGenAI, Type } from "@google/genai";
-import { Suggestion } from "../types";
+import { Suggestion } from "../types.ts";
 
 const getAI = () => new GoogleGenAI({ apiKey: process.env.API_KEY });
 
-// Get destination suggestions based on travel documents using Gemini
 export const getDestinationSuggestions = async (destination: string, documentNames: string[]): Promise<Suggestion[]> => {
   try {
     const ai = getAI();
@@ -47,17 +46,9 @@ export const getDestinationSuggestions = async (destination: string, documentNam
   }
 };
 
-/**
- * Edits a travel photo using Gemini's image editing capabilities with gemini-2.5-flash-image.
- * @param base64Data The original image as a base64 data URL.
- * @param prompt The user's editing instruction.
- * @returns The edited image as a base64 data URL or null on failure.
- */
 export const editTravelPhoto = async (base64Data: string, prompt: string): Promise<string | null> => {
   try {
     const ai = getAI();
-    
-    // Extract mime type and base64 string from data URL
     const matches = base64Data.match(/^data:([^;]+);base64,(.+)$/);
     if (!matches) throw new Error("Invalid base64 data");
     
@@ -81,7 +72,6 @@ export const editTravelPhoto = async (base64Data: string, prompt: string): Promi
       },
     });
 
-    // Iterate through response parts to find the edited image
     if (response.candidates && response.candidates[0].content && response.candidates[0].content.parts) {
       for (const part of response.candidates[0].content.parts) {
         if (part.inlineData) {
@@ -91,7 +81,6 @@ export const editTravelPhoto = async (base64Data: string, prompt: string): Promi
         }
       }
     }
-    
     return null;
   } catch (error) {
     console.error("Error editing photo with Gemini:", error);

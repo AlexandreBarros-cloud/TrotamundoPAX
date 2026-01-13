@@ -1,3 +1,4 @@
+
 import { GoogleGenAI, Type } from "@google/genai";
 
 export const getDestinationSuggestions = async (destination, documentNames) => {
@@ -43,16 +44,22 @@ export const getDestinationSuggestions = async (destination, documentNames) => {
 };
 
 /**
- * Edit travel photos using Gemini 2.5 Flash Image model.
- * Adds/removes elements or changes the scene based on a text prompt.
+ * Edit travel photo using Gemini AI
+ * Uses gemini-2.5-flash-image to process the image and prompt
  */
-export const editTravelPhoto = async (base64Image: string, prompt: string) => {
+export const editTravelPhoto = async (base64Image: string, prompt: string): Promise<string | null> => {
   try {
     const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
-    // Strip data URL prefix to get raw base64 data for the Gemini API
-    const base64Data = base64Image.includes('base64,') ? base64Image.split('base64,')[1] : base64Image;
-    const mimeMatch = base64Image.match(/^data:(image\/[a-zA-Z]+);base64,/);
-    const mimeType = mimeMatch ? mimeMatch[1] : 'image/png';
+    
+    // Extract base64 and mimeType from data URL
+    const matches = base64Image.match(/^data:([^;]+);base64,(.+)$/);
+    if (!matches) {
+      console.error("Invalid base64 image format");
+      return null;
+    }
+    
+    const mimeType = matches[1];
+    const data = matches[2];
 
     const response = await ai.models.generateContent({
       model: 'gemini-2.5-flash-image',
@@ -60,7 +67,7 @@ export const editTravelPhoto = async (base64Image: string, prompt: string) => {
         parts: [
           {
             inlineData: {
-              data: base64Data,
+              data: data,
               mimeType: mimeType,
             },
           },
@@ -71,13 +78,15 @@ export const editTravelPhoto = async (base64Image: string, prompt: string) => {
       },
     });
 
-    // Iterate through response parts to find the generated image (inlineData)
-    const parts = response.candidates?.[0]?.content?.parts || [];
-    for (const part of parts) {
-      if (part.inlineData) {
-        return `data:${part.inlineData.mimeType};base64,${part.inlineData.data}`;
+    // Iterate through parts to find the image part
+    if (response.candidates?.[0]?.content?.parts) {
+      for (const part of response.candidates[0].content.parts) {
+        if (part.inlineData) {
+          return `data:${part.inlineData.mimeType || 'image/png'};base64,${part.inlineData.data}`;
+        }
       }
     }
+    
     return null;
   } catch (error) {
     console.error("Error editing travel photo:", error);

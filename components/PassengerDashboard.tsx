@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import htm from 'htm';
 import { Calendar, MapPin, FileText, Download, Bell, MessageSquare, ArrowRight, Clock, MapPinned, Plane, Hotel, Star, X, Sparkles, CheckCircle2, Compass, Loader2, Lock, Unlock, LogOut } from 'lucide-react';
@@ -50,7 +51,7 @@ const SuggestionCard = ({ suggestion }) => {
 };
 
 const PassengerDashboard = ({ trips, onOpenChat, onLogout, hideHeaderFooter = false }) => {
-  const [decryptedTrips, setDecryptedTrips] = useState([]);
+  const [decryptedTrips, setDecryptedTrips] = useState<any[]>([]);
   const [decrypting, setDecrypting] = useState(true);
   const [selectedAgendaTrip, setSelectedAgendaTrip] = useState(null);
   const [aiSuggestions, setAiSuggestions] = useState({});
@@ -87,7 +88,7 @@ const PassengerDashboard = ({ trips, onOpenChat, onLogout, hideHeaderFooter = fa
       if (!aiSuggestions[trip.id] && !loadingSuggestions[trip.id]) {
         setLoadingSuggestions(prev => ({ ...prev, [trip.id]: true }));
         try {
-          const docs = trip.documents.map((d) => d.name);
+          const docs = (trip.documents || []).map((d) => d.name);
           const result = await getDestinationSuggestions(trip.destination, docs);
           setAiSuggestions(prev => ({ ...prev, [trip.id]: result }));
         } catch (e) {
@@ -105,7 +106,7 @@ const PassengerDashboard = ({ trips, onOpenChat, onLogout, hideHeaderFooter = fa
     return [...agency, ...ai];
   };
 
-  const hasNewMessages = (trip) => trip.messages.some(m => m.sender === 'agency');
+  const hasNewMessages = (trip) => (trip.messages || []).some(m => m.sender === 'agency');
 
   if (decrypting) {
     return html`
@@ -206,7 +207,7 @@ const PassengerDashboard = ({ trips, onOpenChat, onLogout, hideHeaderFooter = fa
                         </h4>
                       </div>
                       <div className="grid grid-cols-1 gap-4">
-                        ${trip.documents.map(doc => html`
+                        ${(trip.documents || []).map(doc => html`
                           <div key=${doc.id} className="flex items-center justify-between p-5 bg-[#FFFAF5]/50 rounded-[2rem] border border-[#EE8F66]/5 group hover:border-[#EE8F66]/30 hover:shadow-lg transition-all duration-300">
                             <div className="flex items-center gap-5">
                               <${DocumentIcon} type=${doc.type} />
@@ -228,7 +229,8 @@ const PassengerDashboard = ({ trips, onOpenChat, onLogout, hideHeaderFooter = fa
                         <${Bell} size=${18} className="text-[#A39161]" /> Atualizações de Voo & Estadia
                       </h4>
                       <div className="relative space-y-10 before:absolute before:left-3 before:top-2 before:bottom-2 before:w-[1px] before:bg-[#EE8F66]/10">
-                        ${trip.updates.slice().sort((a,b) => new Date(b.date).getTime() - new Date(a.date).getTime()).map((update, idx) => html`
+                        ${/* Fix: ensuring updates is treated as an array by using Array.isArray check */
+                        (Array.isArray(trip.updates) ? trip.updates : []).slice().sort((a: any, b: any) => new Date(b.date).getTime() - new Date(a.date).getTime()).map((update: any, idx: number) => html`
                           <div key=${update.id} className="relative pl-12 group/update">
                             <div className=${`absolute left-[7px] top-2 w-2 h-2 rounded-full border border-white ${idx === 0 ? 'bg-[#EE8F66] ring-4 ring-[#EE8F66]/10' : 'bg-[#A39161]/30'}`} />
                             <p className="text-[10px] font-black text-[#EE8F66] uppercase tracking-widest mb-2">${new Date(update.date).toLocaleDateString()}</p>
@@ -277,7 +279,7 @@ const PassengerDashboard = ({ trips, onOpenChat, onLogout, hideHeaderFooter = fa
               <h3 className="font-abril text-6xl md:text-8xl tracking-tight leading-none">${selectedAgendaTrip.destination}</h3>
             </div>
             <div className="flex-1 overflow-y-auto p-10 sm:p-14 space-y-16 bg-[#FFFAF5]/30">
-              ${Object.entries((selectedAgendaTrip.agenda || []).reduce((acc: any, item: any) => {
+              ${Object.entries(((selectedAgendaTrip as any).agenda || []).reduce((acc: any, item: any) => {
                   const date = item.date;
                   if (!acc[date]) acc[date] = [];
                   acc[date].push(item);
@@ -291,8 +293,7 @@ const PassengerDashboard = ({ trips, onOpenChat, onLogout, hideHeaderFooter = fa
                     <div className="flex-1 h-px bg-[#EE8F66]/10" />
                   </div>
                   <div className="space-y-6 pl-2">
-                    ${/* Fix: Cast items to any[] to ensure slice() is available and prevent "unknown" type error */
-                      (items as any[]).slice().sort((a: any, b: any) => a.time.localeCompare(b.time)).map((item: any) => html`
+                    ${(items || []).slice().sort((a: any, b: any) => a.time.localeCompare(b.time)).map((item: any) => html`
                       <div key=${item.id} className="flex gap-8 group/item">
                         <div className="flex flex-col items-center">
                           <span className="text-xs font-black text-[#3D3D3D] bg-white px-3 py-1.5 rounded-xl border border-[#EE8F66]/10 group-hover/item:border-[#EE8F66] transition-colors">${item.time}</span>

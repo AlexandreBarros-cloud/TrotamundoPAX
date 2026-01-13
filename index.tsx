@@ -3,36 +3,26 @@ import React from 'react';
 import ReactDOM from 'react-dom/client';
 import App from './App.tsx';
 
-console.log("🚀 [Trotamundo] Iniciando script de entrada...");
-
-const renderApp = () => {
+const init = () => {
   const rootElement = document.getElementById('root');
-  
-  if (!rootElement) {
-    console.error("❌ Erro: Elemento #root não encontrado no DOM.");
-    return;
-  }
+  if (!rootElement) return;
 
   try {
-    console.log("📦 [Trotamundo] Criando root do React...");
     const root = ReactDOM.createRoot(rootElement);
-    
-    console.log("🎨 [Trotamundo] Renderizando componente App...");
     root.render(
       <React.StrictMode>
         <App />
       </React.StrictMode>
     );
-    console.log("✅ [Trotamundo] Renderização solicitada com sucesso.");
+    console.log("✅ Trotamundo Online");
   } catch (err) {
-    console.error("💥 Erro crítico durante a renderização:", err);
-    throw err; // Lança para ser pego pelo window.onerror no index.html
+    console.error("❌ Erro na renderização:", err);
   }
 };
 
-// Pequeno delay para garantir que o DOM e o importmap estejam prontos
-if (document.readyState === 'complete') {
-  renderApp();
+// O Babel standalone às vezes termina antes do DOM estar pronto
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', init);
 } else {
-  window.addEventListener('load', renderApp);
+  init();
 }

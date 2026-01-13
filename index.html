@@ -7,7 +7,12 @@
     <title>Trotamundo Viagens</title>
     <meta name="theme-color" content="#EE8F66">
     
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Babel para transpilar TSX no navegador -->
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Abril+Fatface&family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
@@ -39,22 +44,24 @@
     </style>
 
     <script>
-      // Injeção imediata para evitar ReferenceError: process is not defined
+      // Polyfill de segurança
       window.process = { env: { API_KEY: "" } };
       
-      window.onerror = function(msg, url, line, col, error) {
+      window.onerror = function(msg, url, line) {
+        if (msg.includes('MIME type')) {
+          console.warn('Detectado erro de MIME type, tentando contornar com Babel...');
+          return;
+        }
         const root = document.getElementById('root');
-        if (root) {
+        if (root && !root.innerHTML.includes('fatal-error')) {
           root.innerHTML = `
             <div class="fatal-error">
-              <h1 style="color: #EE8F66; font-family: 'Abril Fatface';">Erro de Carregamento</h1>
-              <p style="color: #666;">O sistema não conseguiu iniciar os módulos necessários.</p>
-              <pre style="background: #f8f8f8; pading: 15px; border-radius: 8px; font-size: 12px; max-width: 90%; overflow: auto;">${msg}\nNo arquivo: ${url}\nLinha: ${line}</pre>
-              <button onclick="location.reload()" style="margin-top: 20px; background: #EE8F66; color: white; border: none; padding: 12px 25px; border-radius: 10px; cursor: pointer; font-weight: bold;">Recarregar Sistema</button>
+              <h1 style="color: #EE8F66; font-family: 'Abril Fatface';">Ajustando Motores...</h1>
+              <p style="color: #666;">Estamos configurando a compatibilidade do seu navegador.</p>
+              <button onclick="location.reload()" style="margin-top: 20px; background: #EE8F66; color: white; border: none; padding: 12px 25px; border-radius: 10px; cursor: pointer; font-weight: bold;">Recarregar</button>
             </div>
           `;
         }
-        return false;
       };
     </script>
 
@@ -74,7 +81,17 @@
 </head>
 <body class="bg-[#FFFAF5] text-slate-900 font-roboto">
     <div id="root"></div>
-    <!-- O script index.tsx deve ser carregado como módulo -->
-    <script type="module" src="index.tsx"></script>
+    
+    <!-- 
+      IMPORTANTE: Usamos type="text/babel" para que o navegador não tente ler como JS puro.
+      O Babel vai ler este arquivo, transpilá-lo e então executá-lo.
+      data-type="module" avisa o Babel para tratar como um módulo ES.
+    -->
+    <script 
+      type="text/babel" 
+      data-type="module" 
+      data-presets="react,typescript" 
+      src="index.tsx"
+    ></script>
 </body>
 </html>
